@@ -21,6 +21,10 @@ public:
 	void CreateDevice(Microsoft::WRL::ComPtr<IDXGIAdapter> adapter);
 	Microsoft::WRL::ComPtr<ID3D12Device> dev;
 	Microsoft::WRL::ComPtr<ID3D11Device1>dev11;
+
+	/*-- レイトレ新規追加機能 --*/
+
+	Microsoft::WRL::ComPtr<ID3D12Device5>raytracingDevice;
 private:
 	HRESULT result;
 	friend ISingleton<DirectX12Device>;

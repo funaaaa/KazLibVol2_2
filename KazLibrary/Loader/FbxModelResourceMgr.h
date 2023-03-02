@@ -108,6 +108,11 @@ public:
 	{
 		return bones;
 	};
+
+	/*-- レイトレ新規追加機能 --*/
+	// 頂点サイズが欲しかったので持ってきました。
+	static const int VertexSize = sizeof(VertexPosNormalUvSkin);
+
 };
 
 
@@ -122,6 +127,13 @@ public:
 	DirectX::XMFLOAT3 ambient;
 	DirectX::XMFLOAT3 diffuse;
 	std::vector<Model::Bone> bone;
+
+	/*-- レイトレ新規追加機能 --*/
+
+	RESOURCE_HANDLE vertBuffetHandle;
+	RESOURCE_HANDLE indexBufferHandle;
+	int vertexCount;	// 頂点数
+	int indexCount;		// インデックス数
 
 	std::vector<FbxTime> startTime;
 	std::vector<FbxTime> endTime;

@@ -8,7 +8,7 @@
 #include "dxcapi.h"
 
 // シェーダーデータクラスの前方宣言
-class ShaderData;
+class RayShaderData;
 
 /// <summary>
 /// シェーダーデータ保存クラス レイトレ用に持ってきました。新しいエンジンではラスタライズで使ってるやつと統合させます。
@@ -19,7 +19,7 @@ private:
 
 	/*-- メンバ変数 --*/
 
-	std::vector<std::shared_ptr<ShaderData>> shaderData_;
+	std::vector<std::shared_ptr<RayShaderData>> shaderData_;
 
 
 public:

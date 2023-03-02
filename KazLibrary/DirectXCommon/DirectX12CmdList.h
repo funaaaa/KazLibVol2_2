@@ -17,7 +17,10 @@ public:
 	/// </summary>
 	/// <param name="cmdAllocator">コマンドアロケーター</param>
 	void CreateCmdList(ID3D12CommandAllocator *cmdAllocator);
-	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> cmdList;
+
+	/*-- レイトレ新規追加機能 --*/
+	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList4> cmdList;		// ASを構築するための機能が元のコマンドリストには存在しなかったため4にしました。
+
 private:
 	HRESULT result;
 

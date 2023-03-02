@@ -174,6 +174,42 @@
     <ClCompile Include="Game\CollisionDetection\ComputeParticleAvoidSphere.cpp" />
     <ClCompile Include="KazLibrary\Loader\MeshParticleLoader.cpp" />
     <ClCompile Include="Game\Effect\InstanceDeadParticle.cpp" />
+    <ClCompile Include="KazLibrary\Raytracing\BLAS.cpp">
+      <Filter>レイトレーシング</Filter>
+    </ClCompile>
+    <ClCompile Include="KazLibrary\Raytracing\BlasReferenceVector.cpp">
+      <Filter>レイトレーシング</Filter>
+    </ClCompile>
+    <ClCompile Include="KazLibrary\Raytracing\HitGroup.cpp">
+      <Filter>レイトレーシング</Filter>
+    </ClCompile>
+    <ClCompile Include="KazLibrary\Raytracing\HitGroupMgr.cpp">
+      <Filter>レイトレーシング</Filter>
+    </ClCompile>
+    <ClCompile Include="KazLibrary\Raytracing\InstanceVector.cpp">
+      <Filter>レイトレーシング</Filter>
+    </ClCompile>
+    <ClCompile Include="KazLibrary\Raytracing\RayDescriptorHeap.cpp">
+      <Filter>レイトレーシング</Filter>
+    </ClCompile>
+    <ClCompile Include="KazLibrary\Raytracing\RayPipeline.cpp">
+      <Filter>レイトレーシング</Filter>
+    </ClCompile>
+    <ClCompile Include="KazLibrary\Raytracing\RayRootsignature.cpp">
+      <Filter>レイトレーシング</Filter>
+    </ClCompile>
+    <ClCompile Include="KazLibrary\Raytracing\RaytracingScene.cpp">
+      <Filter>レイトレーシング</Filter>
+    </ClCompile>
+    <ClCompile Include="KazLibrary\Raytracing\RayShaderData.cpp">
+      <Filter>レイトレーシング</Filter>
+    </ClCompile>
+    <ClCompile Include="KazLibrary\Raytracing\ShaderStorage.cpp">
+      <Filter>レイトレーシング</Filter>
+    </ClCompile>
+    <ClCompile Include="KazLibrary\Raytracing\Tlas.cpp">
+      <Filter>レイトレーシング</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game\Debug\ParameterMgr.h" />
@@ -363,11 +399,52 @@
     <ClInclude Include="Game\CollisionDetection\ComputeParticleAvoidSphere.h" />
     <ClInclude Include="KazLibrary\Loader\MeshParticleLoader.h" />
     <ClInclude Include="Game\Effect\InstanceDeadParticle.h" />
+    <ClInclude Include="KazLibrary\Raytracing\BLAS.h">
+      <Filter>レイトレーシング</Filter>
+    </ClInclude>
+    <ClInclude Include="KazLibrary\Raytracing\BlasReferenceVector.h">
+      <Filter>レイトレーシング</Filter>
+    </ClInclude>
+    <ClInclude Include="KazLibrary\Raytracing\HitGroup.h">
+      <Filter>レイトレーシング</Filter>
+    </ClInclude>
+    <ClInclude Include="KazLibrary\Raytracing\HitGroupMgr.h">
+      <Filter>レイトレーシング</Filter>
+    </ClInclude>
+    <ClInclude Include="KazLibrary\Raytracing\InstanceVector.h">
+      <Filter>レイトレーシング</Filter>
+    </ClInclude>
+    <ClInclude Include="KazLibrary\Raytracing\RayDescriptorHeap.h">
+      <Filter>レイトレーシング</Filter>
+    </ClInclude>
+    <ClInclude Include="KazLibrary\Raytracing\RayPipeline.h">
+      <Filter>レイトレーシング</Filter>
+    </ClInclude>
+    <ClInclude Include="KazLibrary\Raytracing\RayRootsignature.h">
+      <Filter>レイトレーシング</Filter>
+    </ClInclude>
+    <ClInclude Include="KazLibrary\Raytracing\RaytracingScene.h">
+      <Filter>レイトレーシング</Filter>
+    </ClInclude>
+    <ClInclude Include="KazLibrary\Raytracing\RayShaderData.h">
+      <Filter>レイトレーシング</Filter>
+    </ClInclude>
+    <ClInclude Include="KazLibrary\Raytracing\ShaderStorage.h">
+      <Filter>レイトレーシング</Filter>
+    </ClInclude>
+    <ClInclude Include="KazLibrary\Raytracing\Tlas.h">
+      <Filter>レイトレーシング</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="KazLib.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="レイトレーシング">
+      <UniqueIdentifier>{a19311b4-0ab4-4fe9-aff0-789c0f3ef9a8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

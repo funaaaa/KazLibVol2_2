@@ -29,6 +29,8 @@ uint8_t* Blas::WriteShaderRecord(uint8_t* Dst, UINT RecordSize, Microsoft::WRL::
 	// 使用する頂点データとかが決まったらここを書き込む。
 	assert(0);
 
+	return Dst;
+
 	//Microsoft::WRL::ComPtr<ID3D12StateObjectProperties> rtsoProps_;
 	//StateObject.As(&rtsoProps_);
 	//auto entryBegin = Dst;

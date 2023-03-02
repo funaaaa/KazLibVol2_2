@@ -1,12 +1,12 @@
 #pragma once
 #include <d3d12.h>
-#include "dxcapi.h"
+#include "../dxcapi.h"
 #include <string>
 #include <wrl.h>
 #include <vector>
 
 // シェーダーデータを保存するためのデータクラス
-class ShaderData {
+class RayShaderData {
 
 private:
 
@@ -25,7 +25,7 @@ public:
 	/*-- メンバ関数 --*/
 
 	// コンストラクタ
-	ShaderData(const std::string& ShaderPath, const std::string& EntryPoint, const std::string& ShaderModel, bool IsDXC = false);
+	RayShaderData(const std::string& ShaderPath, const std::string& EntryPoint, const std::string& ShaderModel, bool IsDXC = false);
 
 	// ロード処理
 	void LoadShader();

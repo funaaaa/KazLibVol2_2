@@ -1,5 +1,5 @@
 #include "ShaderStorage.h"
-#include "ShaderData.h"
+#include "RayShaderData.h"
 #include <assert.h>
 
 #pragma comment(lib, "dxcompiler.lib")
@@ -23,7 +23,7 @@ Microsoft::WRL::ComPtr<ID3DBlob> ShaderStorage::LoadShader(const std::string& Sh
 	}
 
 	// シェーダーをロードして保存。
-	shaderData_.emplace_back(std::make_unique<ShaderData>(ShaderPath, EntryPoint, ShaderModel));
+	shaderData_.emplace_back(std::make_unique<RayShaderData>(ShaderPath, EntryPoint, ShaderModel));
 
 	// 最後尾のデータをリターンする。
 	return shaderData_[shaderData_.size() - 1]->GetShaderBlob();
@@ -48,7 +48,7 @@ Microsoft::WRL::ComPtr<ID3DBlob> ShaderStorage::LoadShaderForDXC(const std::stri
 	}
 
 	// シェーダーをロードして保存。
-	shaderData_.emplace_back(std::make_unique<ShaderData>(ShaderPath, EntryPoint, ShaderModel, true));
+	shaderData_.emplace_back(std::make_unique<RayShaderData>(ShaderPath, EntryPoint, ShaderModel, true));
 
 	// 最後尾のデータをリターンする。
 	return shaderData_[shaderData_.size() - 1]->GetShaderBlob();

@@ -1,4 +1,4 @@
-#include "ShaderData.h"
+#include "RayShaderData.h"
 #include <d3dcompiler.h>
 #include <system_error>
 #include <fstream>
@@ -9,7 +9,7 @@
 
 #pragma comment(lib, "dxcompiler.lib")
 
-ShaderData::ShaderData(const std::string& shaderPath_, const std::string& entryPoint_, const std::string& shaderModel_, bool isDXC)
+RayShaderData::RayShaderData(const std::string& shaderPath_, const std::string& entryPoint_, const std::string& shaderModel_, bool isDXC)
 {
 
 	/*-- コンストラクタ --*/
@@ -35,7 +35,7 @@ ShaderData::ShaderData(const std::string& shaderPath_, const std::string& entryP
 
 }
 
-void ShaderData::LoadShader()
+void RayShaderData::LoadShader()
 {
 
 	/*-- シェーダーをロードする処理 --*/
@@ -75,7 +75,7 @@ void ShaderData::LoadShader()
 
 }
 
-void ShaderData::LoadShaderDXC()
+void RayShaderData::LoadShaderDXC()
 {
 	HRESULT hr;
 	std::ifstream infile(shaderPath_, std::ifstream::binary);
@@ -139,7 +139,7 @@ void ShaderData::LoadShaderDXC()
 
 }
 
-std::wstring ShaderData::StringToWString(std::string OString)
+std::wstring RayShaderData::StringToWString(std::string OString)
 {
 	// SJIS → wstring
 	int iBufferSize = MultiByteToWideChar(CP_ACP, 0, OString.c_str()

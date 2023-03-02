@@ -5,6 +5,9 @@
 #include"../Render/RenderData.h"
 #include"../Loader/FbxModelResourceMgr.h"
 
+class Blas;
+
+
 class FbxModelRender :public IRender
 {
 public:
@@ -18,6 +21,19 @@ public:
 
 	DirectX::XMMATRIX motherMat;
 	DirectX::XMMATRIX motherBoneMat;
+
+	/*-- レイトレ新規追加機能 --*/
+
+	std::shared_ptr<Blas> blas;	// レイトレに使用するBlas。全てのモデルがこのクラスを持つようにしたいので本来はIRenderに書くべきだろうが、仮のクラス設計なので扱いやすいこちら側に設定する。
+	bool isRaytracingSetUp;		// レイトレがセットアップ済みかを判断するフラグ。SetupRaytracing関数を呼ぶことでtrueになる。falseの間はレイトレされない。
+	bool isRayTracingEnabled;	// レイトレが有効になっているかフラグ。レイトレがセットアップ済みでこのフラグがtrueになっている状態でDrawを呼ぶことでTlasに登録される。
+
+	/// <summary>
+	/// レイトレーシングの準備関数。この関数を呼ぶことでこのモデルでレイトレーシングが有効化される。
+	/// </summary>
+	/// <param name="IsOpaque"> 不透明フラグ このモデルは不透明だ！って場合はtrue 半透明になるかも！って場合はfalseを入れてください。軽量化のために必要な変数。 </param>
+	void SetupRaytracing(bool IsOpaque = true);
+
 private:
 
 	UINT vertByte;

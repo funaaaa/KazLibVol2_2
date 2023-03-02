@@ -22,7 +22,7 @@ RaytracingScene::RaytracingScene()
 	RayDescriptorHeap::Instance()->Setting();
 
 	// パイプラインを生成。
-	rayPipeline_ = std::make_unique<RayPipeline>();
+	//rayPipeline_ = std::make_unique<RayPipeline>();
 
 }
 

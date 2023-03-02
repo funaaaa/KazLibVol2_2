@@ -58,4 +58,23 @@ void DirectX12Device::CreateDevice(Microsoft::WRL::ComPtr<IDXGIAdapter> adapter)
 	deviceD3D11.As(&multithread);
 	multithread->SetMultithreadProtected(TRUE);
 
+
+	/*-- レイトレ新規追加機能 --*/
+
+	// レイトレ用デバイスを生成。
+	D3D12CreateDevice(adapter.Get(), featureLevel, IID_PPV_ARGS(&raytracingDevice));
+	dev->SetName(L"RaytracingDevice");
+
+	// DXRがサポートしているかを確認
+	D3D12_FEATURE_DATA_D3D12_OPTIONS5 options{};
+	result = raytracingDevice->CheckFeatureSupport(
+		D3D12_FEATURE_D3D12_OPTIONS5, &options, sizeof(options));
+	if (FAILED(result) ||
+		options.RaytracingTier == D3D12_RAYTRACING_TIER_NOT_SUPPORTED)
+	{
+		// レイトレが対応していません。
+		assert(0);
+	}
+
+
 }

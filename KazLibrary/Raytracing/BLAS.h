@@ -1,6 +1,10 @@
 #pragma once
-#include <wrl.h>
-#include <d3d12.h>
+#include"../DirectXCommon/Base.h"
+#include"../Render/IRender.h"
+#include"../Helper/DirtyFlag.h"
+#include"../Render/RenderData.h"
+#include"../Loader/FbxModelResourceMgr.h"
+#include<memory>
 
 // 本来はRESOURCE_HANDLEで良いのだが、FbxModelResourceMgrの設計を変える必要があることをメモするために一旦これを使う。
 struct FbxModelData;

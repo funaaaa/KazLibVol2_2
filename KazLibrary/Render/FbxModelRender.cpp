@@ -2,6 +2,11 @@
 #include"../Helper/KazBufferHelper.h"
 #include"../Buffer/DescriptorHeapMgr.h"
 
+/*-- レイトレ新規追加機能 --*/
+#include"../Raytracing/InstanceVector.h"
+#include"../Raytracing/BLAS.h"
+#include"../Raytracing/BlasReferenceVector.h"
+
 FbxModelRender::FbxModelRender()
 {
 	gpuBuffer = std::make_unique<CreateGpuBuffer>();
@@ -173,6 +178,20 @@ void FbxModelRender::Draw(bool DRAE_FLAG)
 			}
 		}
 
+
+		/*-- レイトレ新規追加機能 --*/
+
+		// レイトレを行う場合。
+		if (isRaytracingSetUp && isRayTracingEnabled) {
+
+			// Blasに参照を追加。
+			BlasReferenceVector::Instance()->AddRef(blas);
+
+			// レイトレ空間にオブジェクトを追加。
+			InstanceVector::Instance()->AddInstance(blas, baseMatWorldData.matWorld);
+
+		}
+
 		//DrawIndexInstanceCommand(drawIndexInstanceCommandData);
 		DrawInstanceCommand(drawInstanceCommandData);
 	}
@@ -202,3 +221,25 @@ void FbxModelRender::ReleaseSkining()
 	removeSkining = true;
 	Release(constBufferHandle[1]);
 }
+
+/*-- レイトレ新規追加機能 --*/
+
+#include "../Raytracing/Blas.h"
+#include "../Raytracing/BlasReferenceVector.h"
+void FbxModelRender::SetupRaytracing(bool IsOpaque)
+{
+
+	/*-- レイトレーシングの準備関数 --*/
+
+	// Blasを構築。
+	blas = std::make_shared<Blas>(IsOpaque, data);
+
+	// レイトレがセットアップ済みの状態にする。
+	isRaytracingSetUp = true;
+
+	// レイトレを有効にする。
+	isRayTracingEnabled = true;
+
+}
+
+/*-----------------------*/
