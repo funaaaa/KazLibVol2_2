@@ -1,7 +1,9 @@
 #pragma once
 #include"../Game/Game.h"
 #include"../KazLibrary/Scene/SceneBase.h"
+#include"../Render/FbxModelRender.h"
 #include <memory>
+#include <array>
 
 class RayPipeline;
 
@@ -13,6 +15,9 @@ private:
 	/*===== メンバ変数 =====*/
 
 	std::unique_ptr<RayPipeline> rayPipeline_;
+
+	// プレイヤー
+	std::array<FbxModelRender, 3> fbxRender;
 
 
 public:

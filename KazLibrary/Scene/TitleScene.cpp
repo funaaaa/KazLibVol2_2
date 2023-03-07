@@ -399,31 +399,31 @@ void TitleScene::Draw()
 	movie.Draw();
 
 	//タイトル画面描画--------------------------------------------
-	renderTarget->SetRenderTarget();
-	for (int i = 0; i < gridR.size(); ++i)
-	{
-		gridR[i]->Draw();
-	}
+	//renderTarget->SetRenderTarget();
+	//for (int i = 0; i < gridR.size(); ++i)
+	//{
+	//	gridR[i]->Draw();
+	//}
 
 
-	if (!startGameFlag)
-	{
-		titleLogoR.Draw();
-		lineLogoR.Draw();
-		onlyControllerR.Draw();
-	}
-	if (buttonFlashFlag && !pressStartButtonFlag)
-	{
-		startButtonR.Draw();
-	}
-	else if (pressStartButtonFlag)
-	{
-		for (int i = 0; i < menuR.size(); ++i)
-		{
-			menuR[i].Draw();
-		}
-	}
-	renderTarget->Draw();
+	//if (!startGameFlag)
+	//{
+	//	titleLogoR.Draw();
+	//	lineLogoR.Draw();
+	//	onlyControllerR.Draw();
+	//}
+	//if (buttonFlashFlag && !pressStartButtonFlag)
+	//{
+	//	startButtonR.Draw();
+	//}
+	//else if (pressStartButtonFlag)
+	//{
+	//	for (int i = 0; i < menuR.size(); ++i)
+	//	{
+	//		menuR[i].Draw();
+	//	}
+	//}
+	//renderTarget->Draw();
 	//タイトル画面描画--------------------------------------------
 
 

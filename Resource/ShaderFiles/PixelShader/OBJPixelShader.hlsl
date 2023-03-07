@@ -6,6 +6,7 @@ SamplerState smp :register(s0);
 
 float4 PSmain(VSOutput input) : SV_TARGET
 {
+    return float4(1, 1, 1, 1);
 	float3 light = normalize(float3(1,-1,1));			//‰E‰º‰œŒü‚«‚Ìƒ‰ƒCƒg
 	float light_diffuse = saturate(dot(-light, input.normal));//ŠÂ‹«Œõ...diffuse‚ð[0,1]‚Ì”ÍˆÍ‚ÉClamp‚·‚é
 	
