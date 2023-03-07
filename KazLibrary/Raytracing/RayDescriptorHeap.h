@@ -62,6 +62,8 @@ public:
 	/// <returns> GPUƒnƒ“ƒhƒ‹ </returns>
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(RAY_HEAP_HANDLE Handle);
 
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetHeap() { return heap_; }
+
 private:
 
 	/// <summary>

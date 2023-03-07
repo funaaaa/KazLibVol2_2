@@ -1,5 +1,4 @@
 #include "RaytracingOutput.h"
-#include "../Raytracing/RayDescriptorHeap.h"
 #include "../DirectXCommon/DirectX12CmdList.h"
 #include "../DirectXCommon/DirectX12Device.h"
 

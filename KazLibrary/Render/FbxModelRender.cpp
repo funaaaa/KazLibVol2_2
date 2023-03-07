@@ -6,6 +6,7 @@
 #include"../Raytracing/InstanceVector.h"
 #include"../Raytracing/BLAS.h"
 #include"../Raytracing/BlasReferenceVector.h"
+#include"../Raytracing/RaytracingOutput.h"
 
 FbxModelRender::FbxModelRender()
 {
@@ -190,6 +191,10 @@ void FbxModelRender::Draw(bool DRAE_FLAG)
 			// レイトレ空間にオブジェクトを追加。
 			InstanceVector::Instance()->AddInstance(blas, baseMatWorldData.matWorld);
 
+			// UAVを登録する。
+			renderData.cmdListInstance->cmdList->SetGraphicsRootDescriptorTable(4, RayDescriptorHeap::Instance()->GetGPUDescriptorHandle(refGBuffer0.lock()->GetUAVIndex()));
+			renderData.cmdListInstance->cmdList->SetGraphicsRootDescriptorTable(5, RayDescriptorHeap::Instance()->GetGPUDescriptorHandle(refGBuffer1.lock()->GetUAVIndex()));
+
 		}
 
 		//DrawIndexInstanceCommand(drawIndexInstanceCommandData);
@@ -226,7 +231,7 @@ void FbxModelRender::ReleaseSkining()
 
 #include "../Raytracing/Blas.h"
 #include "../Raytracing/BlasReferenceVector.h"
-void FbxModelRender::SetupRaytracing(bool IsOpaque)
+void FbxModelRender::SetupRaytracing(std::weak_ptr<RaytracingOutput> GBuffer0, std::weak_ptr<RaytracingOutput> GBuffer1, bool IsOpaque)
 {
 
 	/*-- レイトレーシングの準備関数 --*/
@@ -239,6 +244,13 @@ void FbxModelRender::SetupRaytracing(bool IsOpaque)
 
 	// レイトレを有効にする。
 	isRayTracingEnabled = true;
+
+	// レイトレ用のパイプラインに変更。
+	data.pipelineName = PIPELINE_NAME_FBX_RENDERTARGET_TWO_RAYTRACING;
+
+	// GBufferの参照を保存する。
+	refGBuffer0 = GBuffer0;
+	refGBuffer1 = GBuffer1;
 
 }
 

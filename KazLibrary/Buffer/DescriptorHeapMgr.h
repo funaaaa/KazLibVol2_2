@@ -23,6 +23,7 @@ public:
 	const D3D12_GPU_DESCRIPTOR_HANDLE GetGpuDescriptorView(RESOURCE_HANDLE HANDLE);
 	const D3D12_CPU_DESCRIPTOR_HANDLE GetCpuDescriptorView(RESOURCE_HANDLE HANDLE);
 	void SetDescriptorHeap();
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetHeap() { return heaps; }
 
 
 	int GetType(RESOURCE_HANDLE HANDLE);
