@@ -371,6 +371,7 @@ PreCreateBasePipeLine::PreCreateBasePipeLine()
 	lPipelineMgr->RegisterPixcelShaderWithData(KazFilePathName::PixelShaderPath + "VHSPixelShader.hlsl", "PSmain", "ps_6_4", SHADER_PIXEL_WIHITENOISE);
 
 	lPipelineMgr->RegisterPixcelShaderWithData(KazFilePathName::PixelShaderPath + "FbxTwoRenderPixelShader.hlsl", "PSmain", "ps_6_4", SHADER_PIXEL_FBX_RENDER_TWO_LIGHT);
+	lPipelineMgr->RegisterPixcelShaderWithData(KazFilePathName::PixelShaderPath + "FbxTwoRenderPixelShaderRaytracing.hlsl", "PSmain", "ps_6_4", SHADER_PIXEL_FBX_RENDER_TWO_LIGHT_RAYTRACING);	// レイトレ用で新しく追加。
 	lPipelineMgr->RegisterPixcelShaderWithData(KazFilePathName::PixelShaderPath + "FbxMultiPassPixelShader.hlsl", "PSmain", "ps_6_4", SHADER_PIXEL_FBX_RENDER_TWO);
 	lPipelineMgr->RegisterPixcelShaderWithData(KazFilePathName::PixelShaderPath + "GoalEffectPixelShader.hlsl", "PSmain", "ps_6_4", SHADER_PIXEL_SPRITE_GOAL_EFFECT);
 
@@ -2481,6 +2482,16 @@ PreCreateBasePipeLine::PreCreateBasePipeLine()
 		PIPELINE_DATA_BACKCARING_ALPHABLEND_RNEDERTARGET_SECOND,
 		ROOTSIGNATURE_DATA_DRAW_TEX_SKINING_DATA3,
 		PIPELINE_NAME_FBX_RENDERTARGET_TWO_LIGHT
+	);
+
+	// レイトレ用で作ったパイプライン
+	GraphicsPipeLineMgr::Instance()->CreatePipeLine(
+		LAYOUT_POS_NORMAL_TEX_BONE_WEIGHT,
+		SHADER_VERTEX_FBX,
+		SHADER_PIXEL_FBX_RENDER_TWO_LIGHT_RAYTRACING,
+		PIPELINE_DATA_BACKCARING_ALPHABLEND_RNEDERTARGET_SECOND,
+		ROOTSIGNATURE_DATA_DRAW_TEX_SKINING_DATA3_UAV_UAV,
+		PIPELINE_NAME_FBX_RENDERTARGET_TWO_RAYTRACING
 	);
 
 	//加算合成

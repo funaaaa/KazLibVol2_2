@@ -30,7 +30,7 @@ public:
 
 	// ƒQƒbƒ^
 	Microsoft::WRL::ComPtr<ID3D12Resource> GetRaytracingOutput() { return rayTracingOutput_; }
-	int GetUAVIndex() { return uavDescriptorIndex_; }
+	RAY_HEAP_HANDLE GetUAVIndex() { return uavDescriptorIndex_; }
 
 private:
 
