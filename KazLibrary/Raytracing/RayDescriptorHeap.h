@@ -25,7 +25,7 @@ public:
 	enum class BUFFER_TYPE {
 		//SRV,	// テクスチャ系
 		//CBV,	// 定数バッファ系
-		//UAV,	// UAVテクスチャ系
+		UAV_TEXTURE,	// UAVテクスチャ系
 		AS,		// 加速構造体
 	};
 
@@ -55,6 +55,13 @@ public:
 	/// <param name="Buffer"> 生成するバッファのデータ </param>
 	void AllocateBufferForHandle(RAY_HEAP_HANDLE Handle, BUFFER_TYPE Type, Microsoft::WRL::ComPtr<ID3D12Resource> Buffer = nullptr);
 
+	/// <summary>
+	/// 指定のハンドルのGPUハンドルを取得する。
+	/// </summary>
+	/// <param name="Handle"> GPUハンドルを取得したいバッファのハンドル </param>
+	/// <returns> GPUハンドル </returns>
+	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(RAY_HEAP_HANDLE Handle);
+
 private:
 
 	/// <summary>
@@ -63,5 +70,12 @@ private:
 	/// <param name="Handle"> バッファを生成する位置 </param>
 	/// <param name="Buffer"> 生成するバッファのデータ </param>
 	void AllocateASBuffer(RAY_HEAP_HANDLE Handle, Microsoft::WRL::ComPtr<ID3D12Resource> Buffer);
+
+	/// <summary>
+	/// UAVテクスチャ用のバッファを生成する。
+	/// </summary>
+	/// <param name="Handle"> バッファを生成する位置 </param>
+	/// <param name="Buffer"> 生成するバッファのデータ </param>
+	void AllocateUAVTextureBuffer(RAY_HEAP_HANDLE Handle, Microsoft::WRL::ComPtr<ID3D12Resource> Buffer);
 
 };

@@ -49,10 +49,27 @@ void RayDescriptorHeap::AllocateBufferForHandle(RAY_HEAP_HANDLE Handle, BUFFER_T
 		AllocateASBuffer(head_, Buffer);
 
 		break;
+	case RayDescriptorHeap::BUFFER_TYPE::UAV_TEXTURE:
+
+		/*-- 加速構造体だったら --*/
+
+		// 先頭にバッファを生成する。
+		AllocateUAVTextureBuffer(head_, Buffer);
+
+		break;
 	default:
 		break;
 	}
 
+}
+
+D3D12_GPU_DESCRIPTOR_HANDLE RayDescriptorHeap::GetGPUDescriptorHandle(RAY_HEAP_HANDLE Handle)
+{
+
+	/*===== 指定のハンドルのGPUハンドルを取得する =====*/
+
+	return CD3DX12_GPU_DESCRIPTOR_HANDLE(heap_.Get()->GetGPUDescriptorHandleForHeapStart(), Handle, DirectX12Device::Instance()->raytracingDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
+	
 }
 
 void RayDescriptorHeap::AllocateASBuffer(RAY_HEAP_HANDLE Handle, Microsoft::WRL::ComPtr<ID3D12Resource> Buffer)
@@ -69,5 +86,22 @@ void RayDescriptorHeap::AllocateASBuffer(RAY_HEAP_HANDLE Handle, Microsoft::WRL:
 		heap_.Get()->GetCPUDescriptorHandleForHeapStart(), Handle, DirectX12Device::Instance()->raytracingDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
 	DirectX12Device::Instance()->raytracingDevice->CreateShaderResourceView(nullptr, &srvDesc,
 		basicHeapHandle);
+
+}
+
+void RayDescriptorHeap::AllocateUAVTextureBuffer(RAY_HEAP_HANDLE Handle, Microsoft::WRL::ComPtr<ID3D12Resource> Buffer)
+{
+
+	/*===== UAVテクスチャ用のバッファを生成する =====*/
+
+	// 先頭ハンドルを取得
+	CD3DX12_CPU_DESCRIPTOR_HANDLE basicHeapHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(
+		heap_.Get()->GetCPUDescriptorHandleForHeapStart(), Handle, DirectX12Device::Instance()->raytracingDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
+
+	// ディスクリプタヒープにUAVを確保
+	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc;
+	uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
+	DirectX12Device::Instance()->raytracingDevice->CreateUnorderedAccessView(
+		Buffer.Get(), nullptr, &uavDesc, basicHeapHandle);
 
 }

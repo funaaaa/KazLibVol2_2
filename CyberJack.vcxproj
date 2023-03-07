@@ -261,6 +261,7 @@
     <ClCompile Include="KazLibrary\Raytracing\RayDescriptorHeap.cpp" />
     <ClCompile Include="KazLibrary\Raytracing\RayPipeline.cpp" />
     <ClCompile Include="KazLibrary\Raytracing\RayRootsignature.cpp" />
+    <ClCompile Include="KazLibrary\Raytracing\RaytracingOutput.cpp" />
     <ClCompile Include="KazLibrary\Raytracing\RaytracingScene.cpp" />
     <ClCompile Include="KazLibrary\Raytracing\RayShaderData.cpp" />
     <ClCompile Include="KazLibrary\Raytracing\ShaderStorage.cpp" />
@@ -456,6 +457,7 @@
     <ClInclude Include="KazLibrary\Raytracing\RayDescriptorHeap.h" />
     <ClInclude Include="KazLibrary\Raytracing\RayPipeline.h" />
     <ClInclude Include="KazLibrary\Raytracing\RayRootsignature.h" />
+    <ClInclude Include="KazLibrary\Raytracing\RaytracingOutput.h" />
     <ClInclude Include="KazLibrary\Raytracing\RaytracingScene.h" />
     <ClInclude Include="KazLibrary\Raytracing\RayShaderData.h" />
     <ClInclude Include="KazLibrary\Raytracing\ShaderStorage.h" />

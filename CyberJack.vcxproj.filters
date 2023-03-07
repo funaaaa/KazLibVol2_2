@@ -210,6 +210,9 @@
     <ClCompile Include="KazLibrary\Raytracing\Tlas.cpp">
       <Filter>レイトレーシング</Filter>
     </ClCompile>
+    <ClCompile Include="KazLibrary\Raytracing\RaytracingOutput.cpp">
+      <Filter>レイトレーシング</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game\Debug\ParameterMgr.h" />
@@ -433,6 +436,9 @@
       <Filter>レイトレーシング</Filter>
     </ClInclude>
     <ClInclude Include="KazLibrary\Raytracing\Tlas.h">
+      <Filter>レイトレーシング</Filter>
+    </ClInclude>
+    <ClInclude Include="KazLibrary\Raytracing\RaytracingOutput.h">
       <Filter>レイトレーシング</Filter>
     </ClInclude>
   </ItemGroup>
