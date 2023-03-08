@@ -47,7 +47,7 @@ RaytracingScene::RaytracingScene()
 		index.data.stopAnimationFlag = true;
 		index.data.transform.scale = { 1.0f,1.0f,1.0f };
 		index.data.transform.pos = { 0.0f,0.0f,0.0f };
-		//index.SetupRaytracing(gBuffer0_, gBuffer1_);
+		index.SetupRaytracing(gBuffer0_, gBuffer1_);
 	}
 
 }

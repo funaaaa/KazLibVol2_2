@@ -192,6 +192,8 @@ void FbxModelRender::Draw(bool DRAE_FLAG)
 			InstanceVector::Instance()->AddInstance(blas, baseMatWorldData.matWorld);
 
 			// UAV‚ð“o˜^‚·‚éB
+			ID3D12DescriptorHeap* ppHeap[] = { RayDescriptorHeap::Instance()->GetHeap().Get() };
+			DirectX12CmdList::Instance()->cmdList->SetDescriptorHeaps(_countof(ppHeap), ppHeap);
 			renderData.cmdListInstance->cmdList->SetGraphicsRootDescriptorTable(4, RayDescriptorHeap::Instance()->GetGPUDescriptorHandle(refGBuffer0.lock()->GetUAVIndex()));
 			renderData.cmdListInstance->cmdList->SetGraphicsRootDescriptorTable(5, RayDescriptorHeap::Instance()->GetGPUDescriptorHandle(refGBuffer1.lock()->GetUAVIndex()));
 

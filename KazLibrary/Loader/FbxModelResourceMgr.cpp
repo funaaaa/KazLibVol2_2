@@ -73,24 +73,28 @@ RESOURCE_HANDLE FbxModelResourceMgr::LoadModel(const std::string &MODEL_NAME, bo
 	//リソースに保管
 	//unsigned int vertByte = KazBufferHelper::GetBufferSize<unsigned short>(model->vertices.size(), sizeof(Model::VertexPosNormalUvSkin));
 	int vertByte = static_cast<int>(model->vertices.size()) * static_cast<int>(sizeof(Model::VertexPosNormalUvSkin));
-	//unsigned short indexByte = KazBufferHelper::GetBufferSize<unsigned short>(model->indices.size(), sizeof(unsigned short));
+	unsigned short indexByte = KazBufferHelper::GetBufferSize<unsigned short>(model->indices.size(), sizeof(unsigned int));
 
 
 	RESOURCE_HANDLE lHandle = handle->GetHandle();
 
 	modelResource.push_back(std::make_shared<FbxResourceData>());
 	modelResource[lHandle]->buffers = std::make_unique<CreateGpuBuffer>();
-	RESOURCE_HANDLE vertBuffetHandle = modelResource[lHandle]->buffers->CreateBuffer(KazBufferHelper::SetVertexBufferData(vertByte));
-	//RESOURCE_HANDLE indexBufferHandle = modelResource[lHandle]->buffers->CreateBuffer(KazBufferHelper::SetIndexBufferData(indexByte));
+	modelResource[lHandle]->vertBuffetHandle = modelResource[lHandle]->buffers->CreateBuffer(KazBufferHelper::SetVertexBufferData(vertByte));
+	modelResource[lHandle]->indexBufferHandle = modelResource[lHandle]->buffers->CreateBuffer(KazBufferHelper::SetIndexBufferData(indexByte));
+
+	// 頂点数とインデックス数を保存。
+	modelResource[lHandle]->vertexCount = static_cast<int>(model->vertFloat3Data.size());
+	modelResource[lHandle]->indexCount = static_cast<int>(model->indices.size());
 
 	//バッファ転送-----------------------------------------------------------------------------------------------------
-	modelResource[lHandle]->buffers->TransData(vertBuffetHandle, model->vertices.data(), vertByte);
-	//modelResource[lHandle]->buffers->TransData(indexBufferHandle, model->indices.data(), indexByte);
+	modelResource[lHandle]->buffers->TransData(modelResource[lHandle]->vertBuffetHandle, model->vertices.data(), vertByte);
+	modelResource[lHandle]->buffers->TransData(modelResource[lHandle]->indexBufferHandle, model->indices.data(), indexByte);
 	//バッファ転送-----------------------------------------------------------------------------------------------------
 
 	//バッファビュー設定-----------------------------------------------------------------------------------------------------
-	modelResource[lHandle]->vertexBufferView = KazBufferHelper::SetVertexBufferView(modelResource[lHandle]->buffers->GetGpuAddress(vertBuffetHandle), vertByte, sizeof(model->vertices[0]));
-	//modelResource[lHandle]->indexBufferView = KazBufferHelper::SetIndexBufferView(modelResource[lHandle]->buffers->GetGpuAddress(indexBufferHandle), indexByte);
+	modelResource[lHandle]->vertexBufferView = KazBufferHelper::SetVertexBufferView(modelResource[lHandle]->buffers->GetGpuAddress(modelResource[lHandle]->vertBuffetHandle), vertByte, sizeof(model->vertices[0]));
+	modelResource[lHandle]->indexBufferView = KazBufferHelper::SetIndexBufferView(modelResource[lHandle]->buffers->GetGpuAddress(modelResource[lHandle]->indexBufferHandle), indexByte);
 	//バッファビュー設定-----------------------------------------------------------------------------------------------------
 
 	modelResource[lHandle]->textureHandle = model->textureHandle;

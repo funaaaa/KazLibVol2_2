@@ -142,14 +142,7 @@ bool GraphicsPipeLineMgr::SetPipeLineAndRootSignature(PipeLineNames PIPELINE_NAM
 		GraphicsRootSignature::Instance()->SetRootSignature(rootSignatureName[PIPELINE_NAME]);
 		DirectX12CmdList::Instance()->cmdList->SetPipelineState(pipeLineRegisterData[PIPELINE_NAME].Get());
 
-		// パイプラインがレイトレ用だったら
-		if (PIPELINE_NAME == PIPELINE_NAME_FBX_RENDERTARGET_TWO_RAYTRACING) {
-			ID3D12DescriptorHeap* ppHeap[] = { DescriptorHeapMgr::Instance()->GetHeap().Get(), RayDescriptorHeap::Instance()->GetHeap().Get()};
-			DirectX12CmdList::Instance()->cmdList->SetDescriptorHeaps(_countof(ppHeap), ppHeap);
-		}
-		else {
-			DescriptorHeapMgr::Instance()->SetDescriptorHeap();
-		}
+		DescriptorHeapMgr::Instance()->SetDescriptorHeap();
 		return true;
 	}
 	else
