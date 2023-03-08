@@ -99,7 +99,7 @@ void RayDescriptorHeap::AllocateUAVTextureBuffer(RAY_HEAP_HANDLE Handle, Microso
 		heap_.Get()->GetCPUDescriptorHandleForHeapStart(), Handle, DirectX12Device::Instance()->raytracingDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
 
 	// ディスクリプタヒープにUAVを確保
-	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc;
+	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
 	uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
 	DirectX12Device::Instance()->raytracingDevice->CreateUnorderedAccessView(
 		Buffer.Get(), nullptr, &uavDesc, basicHeapHandle);

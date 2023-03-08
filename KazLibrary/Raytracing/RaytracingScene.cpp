@@ -13,6 +13,8 @@
 #include"../Raytracing/RayDescriptorHeap.h"
 #include"../Raytracing/RayPipeline.h"
 #include"../Raytracing/BlasReferenceVector.h"
+#include"../Raytracing/RaytracingOutput.h"
+#include"../Raytracing/HitGroupMgr.h"
 
 RaytracingScene::RaytracingScene()
 {
@@ -20,22 +22,32 @@ RaytracingScene::RaytracingScene()
 	/*===== コンストラクタ =====*/
 
 	// ヒープを準備
-	//RayDescriptorHeap::Instance()->Setting();
+	RayDescriptorHeap::Instance()->Setting();
+	HitGroupMgr::Instance()->Setting();
 
 	// パイプラインを生成。
-	//rayPipeline_ = std::make_unique<RayPipeline>();
+	pipelineShaders_.push_back({ "Resource/ShaderFiles/RayTracing/RaytracingShader.hlsl", {L"mainRayGen"}, {L"mainMS", L"shadowMS"}, {L"mainCHS", L"mainAnyHit"} });
+	int payloadSize = sizeof(float) * 4 + sizeof(KazMath::Vec3<float>) * 4 + sizeof(UINT) * 4;
+	rayPipeline_ = std::make_unique<RayPipeline>(pipelineShaders_, HitGroupMgr::DEF, 2, 1, 4, payloadSize, static_cast<int>(sizeof(KazMath::Vec2<float>)), 6);
+
+	// GBufferを生成。
+	gBuffer0_ = std::make_shared<RaytracingOutput>();
+	gBuffer0_->Setting(DXGI_FORMAT_R8G8B8A8_UNORM, L"GBuffer0");
+	gBuffer1_ = std::make_shared<RaytracingOutput>();
+	gBuffer1_->Setting(DXGI_FORMAT_R8G8B8A8_UNORM, L"GBuffer1");
 
 	// プレイヤーのモデルをロード
 	fbxRender[0].data.handle = FbxModelResourceMgr::Instance()->LoadModel(KazFilePathName::PlayerPath + "CH_Right_Back_Anim.fbx");
 	fbxRender[1].data.handle = FbxModelResourceMgr::Instance()->LoadModel(KazFilePathName::PlayerPath + "CH_Left_Back_Anim.fbx");
 	fbxRender[2].data.handle = FbxModelResourceMgr::Instance()->LoadModel(KazFilePathName::PlayerPath + "CH_Model_Head.fbx");
 
-	for (int i = 0; i < fbxRender.size(); ++i)
+	for (auto& index : fbxRender)
 	{
-		fbxRender[i].data.pipelineName = PIPELINE_NAME_FBX_RENDERTARGET_TWO;
-		fbxRender[i].data.stopAnimationFlag = true;
-		fbxRender[i].data.transform.scale = { 1.0f,1.0f,1.0f };
-		fbxRender[i].data.transform.pos = { 0.0f,0.0f,0.0f };
+		index.data.pipelineName = PIPELINE_NAME_FBX_RENDERTARGET_TWO;
+		index.data.stopAnimationFlag = true;
+		index.data.transform.scale = { 1.0f,1.0f,1.0f };
+		index.data.transform.pos = { 0.0f,0.0f,0.0f };
+		//index.SetupRaytracing(gBuffer0_, gBuffer1_);
 	}
 
 }
