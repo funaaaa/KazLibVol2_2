@@ -26,5 +26,11 @@ TwoRender PSmain(VSOutput input)
     outPut.target0.a = color.a;
     outPut.target1 = float4(0.0f, 0.0f, 0.0f, 1.0f);
     
+    // GBuffer‚Ö‚Ì‘‚«‚İ
+    GBuffer0[input.svpos.xy].xyz = input.worldPos.xyz;
+    GBuffer0[input.svpos.xy].w = 1;
+    GBuffer1[input.svpos.xy].xyz = input.worldPos.xyz;
+    GBuffer1[input.svpos.xy].w = 1;
+    
     return outPut;
 }

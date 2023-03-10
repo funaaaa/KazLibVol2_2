@@ -12,6 +12,7 @@ cbuffer BaseBuffer : register(REGISTER_DRAW)
 struct VSOutput
 {
     float4 svpos : SV_POSITION; //システム用頂点座標
+    float4 worldPos : TEXCOORD1; //システム用頂点座標
     float3 normal : NORMAL; //法線ベクトル
     float2 uv : TEXCOORD; //uv値
 };

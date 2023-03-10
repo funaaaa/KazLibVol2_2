@@ -1,6 +1,7 @@
 #include "RaytracingOutput.h"
 #include "../DirectXCommon/DirectX12CmdList.h"
 #include "../DirectXCommon/DirectX12Device.h"
+#include "../Buffer/UavViewHandleMgr.h"
 
 void RaytracingOutput::Setting(DXGI_FORMAT Format, LPCWSTR BufferName, KazMath::Vec2<int> TextureSize, D3D12_RESOURCE_STATES ResourceState)
 {
@@ -16,7 +17,10 @@ void RaytracingOutput::Setting(DXGI_FORMAT Format, LPCWSTR BufferName, KazMath::
 	);
 
 	// ディスクリプタヒープにUAVを確保
-	uavDescriptorIndex_ = RayDescriptorHeap::Instance()->AllocateBuffer(RayDescriptorHeap::BUFFER_TYPE::UAV_TEXTURE, rayTracingOutput_.Get());
+	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+	uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
+	uavDescriptorIndex_ = UavViewHandleMgr::Instance()->GetHandle();
+	DescriptorHeapMgr::Instance()->CreateBufferView(uavDescriptorIndex_, uavDesc, rayTracingOutput_.Get());
 
 	// 名前を設定
 	rayTracingOutput_->SetName(BufferName);
@@ -26,7 +30,7 @@ void RaytracingOutput::Setting(DXGI_FORMAT Format, LPCWSTR BufferName, KazMath::
 void RaytracingOutput::SetComputeRootDescriptorTalbe(int RootParamIndex)
 {
 
-	DirectX12CmdList::Instance()->cmdList->SetComputeRootDescriptorTable(RootParamIndex, RayDescriptorHeap::Instance()->GetGPUDescriptorHandle(uavDescriptorIndex_));
+	DirectX12CmdList::Instance()->cmdList->SetComputeRootDescriptorTable(RootParamIndex, DescriptorHeapMgr::Instance()->GetGpuDescriptorView(uavDescriptorIndex_));
 
 }
 

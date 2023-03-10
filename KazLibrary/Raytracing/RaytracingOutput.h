@@ -2,7 +2,7 @@
 #include <d3d12.h>
 #include <wrl.h>
 #include "../KazLibrary/Math/KazMath.h"
-#include "../Raytracing/RayDescriptorHeap.h"
+#include "../Buffer/DescriptorHeapMgr.h"
 
 // レイトレ出力UAVクラス レイトレ関数からの出力結果や、デノイズ後の出力結果の保存用に使用する。
 class RaytracingOutput {
@@ -12,7 +12,7 @@ private:
 	/*===== メンバ変数 =====*/
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> rayTracingOutput_;	// UAV
-	RAY_HEAP_HANDLE uavDescriptorIndex_;									// ディスクリプタヒープ上のこのUAVのインデックス
+	RESOURCE_HANDLE uavDescriptorIndex_;									// ディスクリプタヒープ上のこのUAVのインデックス
 
 
 public:
@@ -30,7 +30,7 @@ public:
 
 	// ゲッタ
 	Microsoft::WRL::ComPtr<ID3D12Resource> GetRaytracingOutput() { return rayTracingOutput_; }
-	RAY_HEAP_HANDLE GetUAVIndex() { return uavDescriptorIndex_; }
+	RESOURCE_HANDLE GetUAVIndex() { return uavDescriptorIndex_; }
 
 private:
 

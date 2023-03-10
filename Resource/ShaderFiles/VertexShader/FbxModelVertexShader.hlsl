@@ -12,6 +12,7 @@ VSOutput VSmain(VSInput input)
     op.svpos = mul(world, skinned.pos);
     op.svpos = mul(view, op.svpos);
     op.svpos = mul(viewproj, op.svpos);
+    op.worldPos = mul(world, skinned.pos);
 
     op.normal = wnormal.xyz;
 	op.uv = input.uv;
