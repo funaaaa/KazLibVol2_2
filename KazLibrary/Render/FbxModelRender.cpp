@@ -17,8 +17,8 @@ FbxModelRender::FbxModelRender()
 	frameTime.SetTime(0, 0, 0, 1, 0, FbxTime::EMode::eFrames60);
 
 
-	ConstBufferDataSkin *constMap = nullptr;
-	gpuBuffer->GetBufferData(constBufferHandle[1])->Map(0, nullptr, (void **)&constMap);
+	ConstBufferDataSkin* constMap = nullptr;
+	gpuBuffer->GetBufferData(constBufferHandle[1])->Map(0, nullptr, (void**)&constMap);
 	for (int i = 0; i < MAX_BONES; i++)
 	{
 		constMap->bones[i] = DirectX::XMMatrixIdentity();
@@ -33,7 +33,7 @@ void FbxModelRender::Draw(bool DRAE_FLAG)
 	if (data.handle.flag.Dirty())
 	{
 		resourceData = FbxModelResourceMgr::Instance()->GetResourceData(data.handle.handle);
-		//drawIndexInstanceCommandData = KazRenderHelper::SetDrawIndexInstanceCommandData(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST, resourceData->vertexBufferView, resourceData->indexBufferView, resourceData->indicisNum, 1);
+		drawIndexInstanceCommandData = KazRenderHelper::SetDrawIndexInstanceCommandData(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST, resourceData->vertexBufferView, resourceData->indexBufferView, resourceData->indicisNum, 1);
 		drawInstanceCommandData = KazRenderHelper::SetDrawInstanceCommandData(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST, resourceData->vertexBufferView, resourceData->vertNum, 1);
 	}
 
@@ -97,14 +97,14 @@ void FbxModelRender::Draw(bool DRAE_FLAG)
 
 		if ((data.isPlayFlag || data.isReverseFlag) && !removeSkining)
 		{
-			ConstBufferDataSkin *lConstMap = nullptr;
-			gpuBuffer->GetBufferData(constBufferHandle[1])->Map(0, nullptr, (void **)&lConstMap);
+			ConstBufferDataSkin* lConstMap = nullptr;
+			gpuBuffer->GetBufferData(constBufferHandle[1])->Map(0, nullptr, (void**)&lConstMap);
 
 			if (resourceData->bone.size() != 0)
 			{
 				for (int i = 0; i < resourceData->bone.size(); i++)
 				{
-					FbxSkin *bonePtr = FbxModelResourceMgr::Instance()->boneSkinArray[data.handle.handle];
+					FbxSkin* bonePtr = FbxModelResourceMgr::Instance()->boneSkinArray[data.handle.handle];
 					FbxAMatrix lFbxCurrentPose = bonePtr->GetCluster(i)->GetLink()->EvaluateGlobalTransform(currentTime);
 					DirectX::XMMATRIX lMatCurrentPose;
 					KazMath::ConvertMatrixFromFbx(&lMatCurrentPose, lFbxCurrentPose);
@@ -123,7 +123,7 @@ void FbxModelRender::Draw(bool DRAE_FLAG)
 			{
 				for (int i = 0; i < resourceData->bone.size(); i++)
 				{
-					FbxSkin *bonePtr = FbxModelResourceMgr::Instance()->boneSkinArray[data.handle.handle];
+					FbxSkin* bonePtr = FbxModelResourceMgr::Instance()->boneSkinArray[data.handle.handle];
 					FbxAMatrix lFbxCurrentPose = bonePtr->GetCluster(i)->GetLink()->EvaluateGlobalTransform(currentTime);
 					DirectX::XMMATRIX lMatCurrentPose;
 					KazMath::ConvertMatrixFromFbx(&lMatCurrentPose, lFbxCurrentPose);
@@ -142,8 +142,8 @@ void FbxModelRender::Draw(bool DRAE_FLAG)
 		}
 		else if (resourceData->bone.size() != 0 && !removeSkining)
 		{
-			ConstBufferDataSkin *lConstMap = nullptr;
-			gpuBuffer->GetBufferData(constBufferHandle[1])->Map(0, nullptr, (void **)&lConstMap);
+			ConstBufferDataSkin* lConstMap = nullptr;
+			gpuBuffer->GetBufferData(constBufferHandle[1])->Map(0, nullptr, (void**)&lConstMap);
 
 			for (int i = 0; i < resourceData->bone.size(); i++)
 			{
@@ -189,7 +189,11 @@ void FbxModelRender::Draw(bool DRAE_FLAG)
 			BlasReferenceVector::Instance()->AddRef(blas);
 
 			// レイトレ空間にオブジェクトを追加。
-			InstanceVector::Instance()->AddInstance(blas, baseMatWorldData.matWorld);
+			InstanceVector::Instance()->AddInstance(blas, DirectX::XMMatrixIdentity());
+
+		}
+
+		if (data.pipelineName == PIPELINE_NAME_FBX_RENDERTARGET_TWO_RAYTRACING) {
 
 			// UAVを登録する。
 			renderData.cmdListInstance->cmdList->SetGraphicsRootDescriptorTable(4, DescriptorHeapMgr::Instance()->GetGpuDescriptorView(refGBuffer0.lock()->GetUAVIndex()));
@@ -197,8 +201,8 @@ void FbxModelRender::Draw(bool DRAE_FLAG)
 
 		}
 
-		//DrawIndexInstanceCommand(drawIndexInstanceCommandData);
-		DrawInstanceCommand(drawInstanceCommandData);
+		DrawIndexInstanceCommand(drawIndexInstanceCommandData);
+		//DrawInstanceCommand(drawInstanceCommandData);
 	}
 
 	data.Record();

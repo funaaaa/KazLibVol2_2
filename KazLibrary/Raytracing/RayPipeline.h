@@ -10,6 +10,7 @@
 
 // レイトレ用ルートシグネチャ
 class RayRootsignature;
+class RaytracingOutput;
 
 /// <summary>
 /// シェーダーテーブルに登録する各種シェーダーのエントリポイント名を保存したもの。
@@ -97,6 +98,11 @@ public:
 	/// HipGroupのデータをGPUに転送。 Blasのデータなどを送る。
 	/// </summary>
 	void MapHitGroupInfo();
+
+	/// <summary>
+	/// レイトレ実行。
+	/// </summary>
+	void TraceRay(std::weak_ptr<RaytracingOutput> Output, std::weak_ptr<RaytracingOutput> GBuffer0, std::weak_ptr<RaytracingOutput> GBuffer1);
 
 	// 各種ゲッタ
 	Microsoft::WRL::ComPtr<ID3D12StateObject> GetStateObject() { return stateObject_; }

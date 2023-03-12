@@ -3,6 +3,8 @@
 #include "../Render/RenderData.h"
 #include "../DirectXCommon/DirectX12Device.h"
 #include "../DirectXCommon/DirectX12CmdList.h"
+#include "../Raytracing/HitGroupMgr.h"
+#include "../Buffer/DescriptorHeapMgr.h"
 #include <memory>
 
 Blas::Blas(bool IsOpaque, const FbxModelData& ModelDataHandle)
@@ -11,13 +13,11 @@ Blas::Blas(bool IsOpaque, const FbxModelData& ModelDataHandle)
 	/*===== コンストラクタ =====*/
 
 	// Blasの構築に必要な形状データを取得。
+	refModelData_ = &ModelDataHandle;
 	D3D12_RAYTRACING_GEOMETRY_DESC geomDesc = GetGeometryDesc(IsOpaque, ModelDataHandle);
 
 	// Blasを構築。
 	BuildBlas(geomDesc);
-
-	// レイトレーシングを有効化
-	isRaytracingEnabled = true;
 
 }
 
@@ -26,125 +26,31 @@ uint8_t* Blas::WriteShaderRecord(uint8_t* Dst, UINT RecordSize, Microsoft::WRL::
 
 	/*===== シェーダーレコードを書き込む =====*/
 
-	// 使用する頂点データとかが決まったらここを書き込む。
-	assert(0);
+	Microsoft::WRL::ComPtr<ID3D12StateObjectProperties> rtsoProps_;
+	StateObject.As(&rtsoProps_);
+	auto entryBegin = Dst;
 
+	auto mode_ = rtsoProps_->GetShaderIdentifier(HitGroupName);
+	if (mode_ == nullptr) {
+		throw std::logic_error("Not found ShaderIdentifier");
+	}
+
+	// シェーダー識別子を書き込む。
+	memcpy(Dst, mode_, D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES);
+	Dst += D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES;
+
+	// 今回のプログラムでは以下の順序でディスクリプタを記録。
+	// [0] : インデックスバッファ
+	// [1] : 頂点バッファ
+	// ※ ローカルルートシグネチャの順序に合わせる必要がある。
+	Dst += WriteGPUDescriptor(Dst, &DescriptorHeapMgr::Instance()->GetGpuDescriptorView(FbxModelResourceMgr::Instance()->GetResourceData(refModelData_->handle.handle)->indexDescriptor));
+	Dst += WriteGPUDescriptor(Dst, &DescriptorHeapMgr::Instance()->GetGpuDescriptorView(FbxModelResourceMgr::Instance()->GetResourceData(refModelData_->handle.handle)->vertexDescriptor));
+	// テクスチャを書き込む。
+	//Dst += WriteGPUDescriptor(Dst, &DescriptorHeapMgr::Instance()->GetGpuDescriptorView(TextureResourceMgr::Instance()->GetDivData(refModelData_->handle.handle).handle));
+	Dst += static_cast<UINT>(sizeof(D3D12_GPU_DESCRIPTOR_HANDLE*));
+	
+	Dst = entryBegin + RecordSize;
 	return Dst;
-
-	//Microsoft::WRL::ComPtr<ID3D12StateObjectProperties> rtsoProps_;
-	//StateObject.As(&rtsoProps_);
-	//auto entryBegin = Dst;
-
-	//auto mode_ = rtsoProps_->GetShaderIdentifier(HitGroupName);
-	//if (mode_ == nullptr) {
-	//	throw std::logic_error("Not found ShaderIdentifier");
-	//}
-
-	//// シェーダー識別子を書き込む。
-	//memcpy(Dst, mode_, D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES);
-	//Dst += D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES;
-
-
-	//// 頂点関係のデータが変更されていたら。
-	//if (hitGroupInfo_.isChangeVertex_[Index]) {
-	//	// 今回のプログラムでは以下の順序でディスクリプタを記録。
-	//	// [0] : インデックスバッファ
-	//	// [1] : 頂点バッファ
-	//	// ※ ローカルルートシグネチャの順序に合わせる必要がある。
-	//	Dst += WriteGPUDescriptor(Dst, &blasInfo_.indexDescriptor_->GetDescriptor(Index).lock()->GetGPUHandle());
-	//	Dst += WriteGPUDescriptor(Dst, &blasInfo_.vertexDescriptor_->GetDescriptor(Index).lock()->GetGPUHandle());
-
-	//	// マテリアル用のバッファをセット。
-	//	Dst += WriteGPUDescriptor(Dst, &blasInfo_.materialDescriptor_->GetDescriptor(Index).lock()->GetGPUHandle());
-
-	//	hitGroupInfo_.isChangeVertex_[Index] = false;
-
-	//}
-	//else {
-
-	//	Dst += static_cast<UINT>((sizeof(D3D12_GPU_DESCRIPTOR_HANDLE*)));
-	//	Dst += static_cast<UINT>((sizeof(D3D12_GPU_DESCRIPTOR_HANDLE*)));
-	//	Dst += static_cast<UINT>((sizeof(D3D12_GPU_DESCRIPTOR_HANDLE*)));
-
-	//}
-
-	//// ヒットグループ名からヒットグループ名IDを取得する。
-	//int hitGroupID = HitGroupMgr::Ins()->GetHitGroupID(HitGroupName);
-
-	//// 頂点、インデックス、マテリアルのオフセット
-	//const int OFFSET_VERTEX_INDEX_MATERIAL = 3;
-
-	//// ヒットグループIDからSRVの数を取得。
-	//int srvCount = HitGroupMgr::Ins()->GetHitGroupSRVCount(hitGroupID) - OFFSET_VERTEX_INDEX_MATERIAL;
-
-	//// テクスチャ関係が変更されていたら。
-	//if (hitGroupInfo_.isChangeTexture_[Index]) {
-
-	//	// ここはテクスチャのサイズではなく、パイプラインにセットされたSRVの数を持ってきてそれを使う。
-	//	// この時点でSRVの数とテクスチャの数が合っていなかったらassertを出す。
-	//	for (int index = 0; index < srvCount; ++index) {
-
-	//		// 0番目は基本テクスチャ。
-	//		if (index == 0) {
-
-	//			// 基本のテクスチャが設定されていない。
-	//			if (hitGroupInfo_.baseTextureHandle_ == -1) assert(0);
-
-	//			CD3DX12_GPU_DESCRIPTOR_HANDLE texDescHandle = DescriptorHeapMgr::Ins()->GetGPUHandleIncrement(hitGroupInfo_.baseTextureHandle_);
-	//			Dst += WriteGPUDescriptor(Dst, &texDescHandle);
-
-	//		}
-	//		// 1番目は法線マップテクスチャ。
-	//		else if (index == 1) {
-
-	//			if (hitGroupInfo_.mapTextureHandle_ != -1) {
-
-	//				CD3DX12_GPU_DESCRIPTOR_HANDLE texDescHandle = DescriptorHeapMgr::Ins()->GetGPUHandleIncrement(hitGroupInfo_.mapTextureHandle_);
-	//				Dst += WriteGPUDescriptor(Dst, &texDescHandle);
-
-	//			}
-	//			else {
-
-	//				// 法線マップが設定されていなかったら、メモリの隙間を埋めるため通常のテクスチャを書き込む。
-	//				CD3DX12_GPU_DESCRIPTOR_HANDLE texDescHandle = DescriptorHeapMgr::Ins()->GetGPUHandleIncrement(hitGroupInfo_.baseTextureHandle_);
-	//				Dst += WriteGPUDescriptor(Dst, &texDescHandle);
-
-	//			}
-
-	//		}
-
-	//	}
-
-	//	hitGroupInfo_.isChangeTexture_[Index] = false;
-
-	//}
-	//else {
-
-	//	Dst += static_cast<UINT>(sizeof(D3D12_GPU_DESCRIPTOR_HANDLE*)) * static_cast<UINT>(srvCount);
-
-	//}
-
-	//// 使用するUAVの数を取得。
-	//int uavCount = HitGroupMgr::Ins()->GetHitGroupUAVCount(hitGroupID);
-	//for (int index = 0; index < uavCount; ++index) {
-
-	//	// テクスチャが存在していたら。
-	//	if (0 < hitGroupInfo_.uavHandle_.size()) {
-
-	//		CD3DX12_GPU_DESCRIPTOR_HANDLE texDescHandle = DescriptorHeapMgr::Ins()->GetGPUHandleIncrement(hitGroupInfo_.uavHandle_[index]);
-	//		Dst += WriteGPUDescriptor(Dst, &texDescHandle);
-
-	//	}
-	//	else {
-
-	//		Dst += sizeof(D3D12_GPU_DESCRIPTOR_HANDLE*);
-
-	//	}
-
-	//}
-
-	//Dst = entryBegin + recordSize;
-	//return Dst;
 
 }
 
@@ -170,7 +76,7 @@ D3D12_RAYTRACING_GEOMETRY_DESC Blas::GetGeometryDesc(bool IsOpaque, const FbxMod
 	// 形状データの細かい項目を設定。
 	auto& triangles = geometryDesc.Triangles;
 	triangles.VertexBuffer.StartAddress = resourceData.lock()->buffers->GetGpuAddress(resourceData.lock()->vertBuffetHandle);
-	triangles.VertexBuffer.StrideInBytes = static_cast<UINT64>(sizeof(Model::VertexSize));
+	triangles.VertexBuffer.StrideInBytes = static_cast<UINT64>(sizeof(Model::VertexPosNormalUvSkin));
 	triangles.VertexCount = resourceData.lock()->vertexCount;
 	triangles.IndexBuffer = resourceData.lock()->buffers->GetGpuAddress(resourceData.lock()->indexBufferHandle);
 	triangles.IndexCount = resourceData.lock()->indexCount;

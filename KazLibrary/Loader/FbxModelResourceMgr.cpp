@@ -2,6 +2,8 @@
 #include"../Loader/TextureResourceMgr.h"
 #include"../Helper/KazHelper.h"
 #include"../Helper/ResourceFilePass.h"
+#include"../Buffer/DescriptorHeapMgr.h"
+#include"../Buffer/UavViewHandleMgr.h"
 
 FbxModelResourceMgr::FbxModelResourceMgr()
 {
@@ -70,6 +72,12 @@ RESOURCE_HANDLE FbxModelResourceMgr::LoadModel(const std::string &MODEL_NAME, bo
 		return -1;
 	}
 
+	// Indexを再計算。
+	model->indices.clear();
+	for(int index = 0; index < model->vertices.size(); ++index){
+		model->indices.emplace_back(index);
+	}
+
 	//リソースに保管
 	//unsigned int vertByte = KazBufferHelper::GetBufferSize<unsigned short>(model->vertices.size(), sizeof(Model::VertexPosNormalUvSkin));
 	int vertByte = static_cast<int>(model->vertices.size()) * static_cast<int>(sizeof(Model::VertexPosNormalUvSkin));
@@ -82,6 +90,25 @@ RESOURCE_HANDLE FbxModelResourceMgr::LoadModel(const std::string &MODEL_NAME, bo
 	modelResource[lHandle]->buffers = std::make_unique<CreateGpuBuffer>();
 	modelResource[lHandle]->vertBuffetHandle = modelResource[lHandle]->buffers->CreateBuffer(KazBufferHelper::SetVertexBufferData(vertByte));
 	modelResource[lHandle]->indexBufferHandle = modelResource[lHandle]->buffers->CreateBuffer(KazBufferHelper::SetIndexBufferData(indexByte));
+
+	// レイトレ用で新たに作りました。
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+	srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.Buffer.NumElements = static_cast<UINT>(model->vertices.size());
+	srvDesc.Buffer.FirstElement = 0;
+	srvDesc.Buffer.StructureByteStride = sizeof(model->vertices[0]);
+	modelResource[lHandle]->vertexDescriptor = UavViewHandleMgr::Instance()->GetHandle();
+	DescriptorHeapMgr::Instance()->CreateBufferView(modelResource[lHandle]->vertexDescriptor, srvDesc, modelResource[lHandle]->buffers->GetBufferData(modelResource[lHandle]->vertBuffetHandle).Get());
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+	srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.Buffer.NumElements = static_cast<UINT>(model->indices.size());
+	srvDesc.Buffer.FirstElement = 0;
+	srvDesc.Buffer.StructureByteStride = sizeof(model->indices[0]);
+	modelResource[lHandle]->indexDescriptor = UavViewHandleMgr::Instance()->GetHandle();
+	DescriptorHeapMgr::Instance()->CreateBufferView(modelResource[lHandle]->indexDescriptor, srvDesc, modelResource[lHandle]->buffers->GetBufferData(modelResource[lHandle]->indexBufferHandle).Get());
 
 	// 頂点数とインデックス数を保存。
 	modelResource[lHandle]->vertexCount = static_cast<int>(model->vertFloat3Data.size());

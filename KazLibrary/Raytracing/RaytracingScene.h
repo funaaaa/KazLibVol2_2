@@ -24,8 +24,15 @@ private:
 	std::shared_ptr<RaytracingOutput> gBuffer0_;
 	std::shared_ptr<RaytracingOutput> gBuffer1_;
 
+	// 出力用
+	std::shared_ptr<RaytracingOutput> output_;
+
 	// プレイヤー
 	std::array<FbxModelRender, 3> fbxRender;
+
+	// 天球
+	FbxModelRender skydome_;
+	FbxModelRender cube_;
 
 
 public:

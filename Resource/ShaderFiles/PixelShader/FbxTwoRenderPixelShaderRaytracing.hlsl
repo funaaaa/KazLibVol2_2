@@ -29,7 +29,7 @@ TwoRender PSmain(VSOutput input)
     // GBuffer‚Ö‚Ì‘‚«‚İ
     GBuffer0[input.svpos.xy].xyz = input.worldPos.xyz;
     GBuffer0[input.svpos.xy].w = 1;
-    GBuffer1[input.svpos.xy].xyz = input.worldPos.xyz;
+    GBuffer1[input.svpos.xy].xyz = input.normal.xyz;
     GBuffer1[input.svpos.xy].w = 1;
     
     return outPut;

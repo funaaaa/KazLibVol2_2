@@ -2575,15 +2575,15 @@ PreCreateBasePipeLine::PreCreateBasePipeLine()
 	);
 
 
-	//Objパイプライン
-	GraphicsPipeLineMgr::Instance()->CreatePipeLine(
-		LAYOUT_POS_NORMAL_TEX,
-		SHADER_VERTEX_OBJ,
-		SHADER_PIXEL_FOG_OBJ,
-		PIPELINE_DATA_NOCARING_NOBLEND,
-		ROOTSIGNATURE_DATA_DRAW_DATA1_TEX_DATA2,
-		PIPELINE_NAME_FOG_OBJ
-	);
+	////Objパイプライン
+	//GraphicsPipeLineMgr::Instance()->CreatePipeLine(
+	//	LAYOUT_POS_NORMAL_TEX,
+	//	SHADER_VERTEX_OBJ,
+	//	SHADER_PIXEL_FOG_OBJ,
+	//	PIPELINE_DATA_NOCARING_NOBLEND,
+	//	ROOTSIGNATURE_DATA_DRAW_DATA1_TEX_DATA2,
+	//	PIPELINE_NAME_FOG_OBJ
+	//);
 
 	//スプライト...フォグ付き
 	GraphicsPipeLineMgr::Instance()->CreatePipeLine(

@@ -6,7 +6,6 @@
 #include"../Loader/FbxModelResourceMgr.h"
 #include<memory>
 
-// 本来はRESOURCE_HANDLEで良いのだが、FbxModelResourceMgrの設計を変える必要があることをメモするために一旦これを使う。
 struct FbxModelData;
 
 /// <summary>
@@ -22,7 +21,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> scratchBuffer_;	// Blasを形成する際に必要なバッファ
 	Microsoft::WRL::ComPtr<ID3D12Resource> updateBuffer_;	// Blasのアップロード用バッファ
 
-	bool isRaytracingEnabled;	// レイトレが有効化されているかのフラグ。距離によってレイトレをカリングする際に一時的に無効化させたり、モデルが描画されなくなった際にfalseにする。
+	const FbxModelData* refModelData_;
 
 
 public:
@@ -78,5 +77,17 @@ private:
 	/// <param name="Name"> バッファにつける名前 </param>
 	/// <returns> 生成されたバッファ </returns>
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBuffer(size_t Size, D3D12_RESOURCE_FLAGS Flags, D3D12_RESOURCE_STATES InitialState, D3D12_HEAP_TYPE HeapType, const wchar_t* Name = nullptr);
+
+	// GPUディスクリプタを書き込む。
+	inline UINT WriteGPUDescriptor(void* Dst, const D3D12_GPU_DESCRIPTOR_HANDLE* Descriptor)
+	{
+		memcpy(Dst, Descriptor, sizeof(Descriptor));
+		return static_cast<UINT>((sizeof(Descriptor)));
+	}
+	inline UINT WriteGPUDescriptor(void* Dst, const D3D12_GPU_VIRTUAL_ADDRESS* Descriptor)
+	{
+		memcpy(Dst, Descriptor, sizeof(Descriptor));
+		return static_cast<UINT>((sizeof(Descriptor)));
+	}
 
 };

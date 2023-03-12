@@ -2,6 +2,8 @@
 #include "../DirectXCommon/DirectX12Device.h"
 #include "../DirectXCommon/DirectX12CmdList.h"
 #include "../Raytracing/InstanceVector.h"
+#include "../Buffer/DescriptorHeapMgr.h"
+#include "../Buffer/UavViewHandleMgr.h"
 
 Tlas::Tlas()
 {
@@ -108,17 +110,31 @@ void Tlas::ReBuildTlas()
 	// Tlasがまだ生成されていなかったら。
 	if (descHeapIndex_ == -1) {
 
+		// 加速構造体の設定。
+		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_RAYTRACING_ACCELERATION_STRUCTURE;
+		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		srvDesc.RaytracingAccelerationStructure.Location = tlasBuffer_->GetGPUVirtualAddress();
+
+		// Indexを取得する。
+		descHeapIndex_ = UavViewHandleMgr::Instance()->GetHandle();
+
 		// ヒープの先頭にバッファを生成。
-		descHeapIndex_ = RayDescriptorHeap::Instance()->AllocateBuffer(RayDescriptorHeap::BUFFER_TYPE::AS, tlasBuffer_);
+		DescriptorHeapMgr::Instance()->CreateBufferView(descHeapIndex_, srvDesc);
 
 	}
 	else {
 
+		// 加速構造体の設定。
+		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_RAYTRACING_ACCELERATION_STRUCTURE;
+		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		srvDesc.RaytracingAccelerationStructure.Location = tlasBuffer_->GetGPUVirtualAddress();
+
 		// すでにバッファを生成してある位置に上書きする形で生成。
-		RayDescriptorHeap::Instance()->AllocateBufferForHandle(descHeapIndex_, RayDescriptorHeap::BUFFER_TYPE::AS, tlasBuffer_);
+		DescriptorHeapMgr::Instance()->CreateBufferView(descHeapIndex_, srvDesc);
 
 	}
-
 
 }
 

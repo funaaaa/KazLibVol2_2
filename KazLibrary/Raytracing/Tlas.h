@@ -7,7 +7,7 @@
 /// <summary>
 /// TopLevelの加速構造体 InstanceVectorを登録することによってレイトレ空間を構築する。
 /// </summary>
-class Tlas : public ISingleton<Tlas>{
+class Tlas : public ISingleton<Tlas> {
 
 private:
 
@@ -18,7 +18,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> instanceDescBuffer_;	// インスタンスバッファ
 	void* instanceDescMapAddress_;								// インスタンスバッファにデータを送る際のアドレス
 	int instanceCapacity_;										// 現在のTlasのバッファのInstance数の許容量。 InstanceVectorの要素数がこの数を超えたら全てのバッファを再生成する。
-	RAY_HEAP_HANDLE descHeapIndex_;								// Tlasを保存してあるDescriptorHeap上のインデックス
+	int descHeapIndex_;								// Tlasを保存してあるDescriptorHeap上のインデックス
 
 
 public:
@@ -34,6 +34,8 @@ public:
 	/// TLASを構築。全てのDrawコールを終えた後に呼んでください。
 	/// </summary>
 	void Build();
+
+	int GetDescHeapHandle() { return descHeapIndex_; }
 
 private:
 

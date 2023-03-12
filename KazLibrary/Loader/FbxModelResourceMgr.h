@@ -72,7 +72,7 @@ public:
 		}
 	};
 	FbxMesh *mesh;
-private:
+public:
 	struct VertexPosNormalUvSkin
 	{
 		DirectX::XMFLOAT3 pos;
@@ -81,6 +81,8 @@ private:
 		UINT boneIndex[MAX_BONE_INDICES];
 		float boneWeight[MAX_BONE_INDICES];
 	};	
+
+private:
 
 	std::string name;
 	std::vector<Node>nodes;
@@ -109,10 +111,6 @@ public:
 		return bones;
 	};
 
-	/*-- レイトレ新規追加機能 --*/
-	// 頂点サイズが欲しかったので持ってきました。
-	static const int VertexSize = sizeof(VertexPosNormalUvSkin);
-
 };
 
 
@@ -132,6 +130,8 @@ public:
 
 	RESOURCE_HANDLE vertBuffetHandle;
 	RESOURCE_HANDLE indexBufferHandle;
+	RESOURCE_HANDLE vertexDescriptor;
+	RESOURCE_HANDLE indexDescriptor;
 	int vertexCount;	// 頂点数
 	int indexCount;		// インデックス数
 

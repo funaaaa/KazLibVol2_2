@@ -2,8 +2,12 @@
 #include "../Raytracing/RayRootsignature.h"
 #include "../Raytracing/HitGroupMgr.h"
 #include "../DirectXCommon/DirectX12Device.h"
+#include "../DirectXCommon/DirectX12CmdList.h"
+#include "../Buffer/DescriptorHeapMgr.h"
 #include "../Raytracing/ShaderStorage.h"
 #include "../Raytracing/BlasReferenceVector.h"
+#include "../Raytracing/Tlas.h"
+#include "../Raytracing/RaytracingOutput.h"
 #include <DirectXMath.h>
 
 RayPipeline::RayPipeline(const std::vector<RayPipelineShaderData>& InputData, HitGroupMgr::HITGROUP_ID UseHitGroup, int SRVCount, int CBVCount, int UAVCount, int PayloadSize, int AttribSize, int ReflectionCount)
@@ -178,6 +182,8 @@ void RayPipeline::BuildShaderTable(int DispatchX, int DispatchY)
 		// 再構築。
 		ConstructionShaderTable(DispatchX, DispatchY);
 
+		numBlas_ = blasRefCount;
+
 	}
 	else {
 
@@ -258,10 +264,35 @@ void RayPipeline::MapHitGroupInfo()
 
 		uint8_t* pRecord = hitgroupStart;
 
-		// 送るBLASのデータが増えた際はBLASごとに書き込む処理を変える。今考えているのは、HITGROUP_IDごとに関数を用意する実装。
 		pRecord = BlasReferenceVector::Instance()->WriteShaderRecord(pRecord, hitgroupRecordSize_, stateObject_, hitGroupName_);
 
 	}
+
+}
+
+void RayPipeline::TraceRay(std::weak_ptr<RaytracingOutput> Output, std::weak_ptr<RaytracingOutput> GBuffer0, std::weak_ptr<RaytracingOutput> GBuffer1)
+{
+
+	/*===== レイトレーシングを実行 =====*/
+
+	// グローバルルートシグネチャで使うと宣言しているリソースらをセット。
+	ID3D12DescriptorHeap* descriptorHeaps[] = { DescriptorHeapMgr::Instance()->GetHeap().Get() };
+	DirectX12CmdList::Instance()->cmdList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+	DirectX12CmdList::Instance()->cmdList->SetComputeRootSignature(GetGlobalRootSig()->GetRootSig().Get());
+
+	// TLASを設定。
+	DirectX12CmdList::Instance()->cmdList->SetComputeRootDescriptorTable(0, DescriptorHeapMgr::Instance()->GetGpuDescriptorView(Tlas::Instance()->GetDescHeapHandle()));
+
+	// 出力用UAVを設定。
+	Output.lock()->SetComputeRootDescriptorTalbe(1);
+	GBuffer0.lock()->SetComputeRootDescriptorTalbe(2);
+	GBuffer1.lock()->SetComputeRootDescriptorTalbe(3);
+
+	// パイプラインを設定。
+	DirectX12CmdList::Instance()->cmdList->SetPipelineState1(stateObject_.Get());
+
+	// レイトレーシングを実行。
+	DirectX12CmdList::Instance()->cmdList->DispatchRays(&dispatchRayDesc_);
 
 }
 
@@ -347,7 +378,6 @@ void RayPipeline::WriteShadetTalbeAndSettingRay(int DispatchX, int DispatchY)
 
 		uint8_t* pRecord = hitgroupStart;
 
-		// この処理は仮の実装。送るBLASのデータが増えた際はBLASごとに書き込む処理を変える。今考えているのは、HITGROUP_IDごとに関数を用意する実装。
 		pRecord = BlasReferenceVector::Instance()->WriteShaderRecord(pRecord, hitgroupRecordSize_, stateObject_, hitGroupName_);
 
 	}
