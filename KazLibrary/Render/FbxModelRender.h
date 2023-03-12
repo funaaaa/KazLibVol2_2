@@ -30,12 +30,13 @@ public:
 	bool isRayTracingEnabled;	// レイトレが有効になっているかフラグ。レイトレがセットアップ済みでこのフラグがtrueになっている状態でDrawを呼ぶことでTlasに登録される。
 	std::weak_ptr<RaytracingOutput> refGBuffer0;
 	std::weak_ptr<RaytracingOutput> refGBuffer1;
+	std::weak_ptr<RaytracingOutput> refRenderUAV;
 
 	/// <summary>
 	/// レイトレーシングの準備関数。この関数を呼ぶことでこのモデルでレイトレーシングが有効化される。
 	/// </summary>
 	/// <param name="IsOpaque"> 不透明フラグ このモデルは不透明だ！って場合はtrue 半透明になるかも！って場合はfalseを入れてください。軽量化のために必要な変数。 </param>
-	void SetupRaytracing(std::weak_ptr<RaytracingOutput> GBuffer0, std::weak_ptr<RaytracingOutput> GBuffer1, bool IsOpaque = true);
+	void SetupRaytracing(std::weak_ptr<RaytracingOutput> GBuffer0, std::weak_ptr<RaytracingOutput> GBuffer1, std::weak_ptr<RaytracingOutput> RenderUAV, bool IsOpaque = true);
 
 private:
 

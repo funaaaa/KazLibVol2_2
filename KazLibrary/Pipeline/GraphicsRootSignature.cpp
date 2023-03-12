@@ -165,19 +165,34 @@ void GraphicsRootSignature::CreateRootSignature(RootSignatureMode ROOTSIGNATURE,
 		CreateMyRootSignature(ROOTSIGNATURE_DATA.sample, computeRootParameters.data(), computeRootParameters.size(), ROOTSIGNATURE);
 
 	}
-	else if (ROOTSIGNATURE == ROOTSIGNATURE_DATA_DRAW_TEX_SKINING_DATA3_UAV_UAV)
+	else if (ROOTSIGNATURE == ROOTSIGNATURE_DATA_DRAW_TEX_SKINING_DATA3_UAV_UAV_UAV)
 	{
-		std::array<CD3DX12_ROOT_PARAMETER, 6> computeRootParameters;
-		std::array <CD3DX12_DESCRIPTOR_RANGE, 3> ranges{};
+		std::array<CD3DX12_ROOT_PARAMETER, 7> computeRootParameters;
+		std::array <CD3DX12_DESCRIPTOR_RANGE, 4> ranges{};
 		ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
 		ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0);
 		ranges[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 1);
+		ranges[3].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 2);
 		computeRootParameters[0].InitAsConstantBufferView(0, 0);
 		computeRootParameters[1].InitAsDescriptorTable(1, &ranges[0]);
 		computeRootParameters[2].InitAsConstantBufferView(1, 0);
 		computeRootParameters[3].InitAsConstantBufferView(2, 0);
 		computeRootParameters[4].InitAsDescriptorTable(1, &ranges[1]);
 		computeRootParameters[5].InitAsDescriptorTable(1, &ranges[2]);
+		computeRootParameters[6].InitAsDescriptorTable(1, &ranges[3]);
+
+		CreateMyRootSignature(ROOTSIGNATURE_DATA.sample, computeRootParameters.data(), computeRootParameters.size(), ROOTSIGNATURE);
+	}
+	else if (ROOTSIGNATURE == ROOTSIGNATURE_DATA_DRAW_TEX_SKINING_UAV)
+	{
+		std::array<CD3DX12_ROOT_PARAMETER, 4> computeRootParameters;
+		std::array <CD3DX12_DESCRIPTOR_RANGE, 2> ranges{};
+		ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
+		ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0);
+		computeRootParameters[0].InitAsConstantBufferView(0, 0);
+		computeRootParameters[1].InitAsDescriptorTable(1, &ranges[0]);
+		computeRootParameters[2].InitAsConstantBufferView(1, 0);
+		computeRootParameters[3].InitAsDescriptorTable(1, &ranges[1]);
 
 		CreateMyRootSignature(ROOTSIGNATURE_DATA.sample, computeRootParameters.data(), computeRootParameters.size(), ROOTSIGNATURE);
 	}

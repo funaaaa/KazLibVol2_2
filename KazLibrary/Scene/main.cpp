@@ -46,13 +46,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 	WinApi winApi;
 	Msg msg;
-	DirectX12 directX;
 	CheckWinError = winApi.CreateMyWindow(WIN_X, WIN_Y);
 	if (CheckResult("ウィンドウの生成", CheckWinError))
 	{
 		return 0;
 	}
-	CheckDirectXError = directX.Create(WIN_X, WIN_Y, winApi.hwnd);
+	CheckDirectXError = DirectX12::Instance()->Create(WIN_X, WIN_Y, winApi.hwnd);
 	//CheckDirectXError = S_FALSE;
 	if (CheckResult("DirextX12の生成", CheckDirectXError))
 	{
@@ -80,7 +79,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	MyImgui imgui;
 	imgui.Create(winApi.hwnd);
 
-	RenderTargetStatus::Instance()->CreateDoubleBuffer(directX.swapchain);
+	RenderTargetStatus::Instance()->CreateDoubleBuffer(DirectX12::Instance()->swapchain);
 
 	long lCppVersion = __cplusplus;
 	std::cout << "現在使用しているC++:" << lCppVersion << "\n";
@@ -127,7 +126,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		{
 			RenderTargetStatus::Instance()->SwapResourceBarrier();
 		}
-		directX.ActCommand();
+		DirectX12::Instance()->ActCommand();
 
 		lStop1FlameFlag = true;
 	}

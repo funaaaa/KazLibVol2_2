@@ -7,6 +7,7 @@ SamplerState smp : register(s0);
 // レイトレ用GBuffer
 RWTexture2D<float4> GBuffer0 : register(u0);
 RWTexture2D<float4> GBuffer1 : register(u1);
+RWTexture2D<float4> RenderUAV : register(u2);
 
 cbuffer LightDirBuffer : register(b2)
 {
@@ -29,8 +30,18 @@ TwoRender PSmain(VSOutput input)
     // GBufferへの書き込み
     GBuffer0[input.svpos.xy].xyz = input.worldPos.xyz;
     GBuffer0[input.svpos.xy].w = 1;
-    GBuffer1[input.svpos.xy].xyz = input.normal.xyz;
+    
+    // カメラの位置をビュー行列から取得する。
+    float3 eyePos = float3(view[3].xyz);
+    
+    // カメラからこのポリゴンまでのベクトル
+    float3 eyeDir = normalize(eyePos - input.worldPos.xyz);
+    
+    // 反射させる。
+    GBuffer1[input.svpos.xy].xyz = reflect(eyeDir, input.normal.xyz);
     GBuffer1[input.svpos.xy].w = 1;
+    
+    RenderUAV[input.svpos.xy] = outPut.target0;
     
     return outPut;
 }

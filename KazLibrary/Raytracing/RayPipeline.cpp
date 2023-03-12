@@ -4,10 +4,12 @@
 #include "../DirectXCommon/DirectX12Device.h"
 #include "../DirectXCommon/DirectX12CmdList.h"
 #include "../Buffer/DescriptorHeapMgr.h"
+#include "../DirectXCommon/DirectX12.h"
 #include "../Raytracing/ShaderStorage.h"
 #include "../Raytracing/BlasReferenceVector.h"
 #include "../Raytracing/Tlas.h"
 #include "../Raytracing/RaytracingOutput.h"
+#include "../DirectXCommon/DirectX12.h"
 #include <DirectXMath.h>
 
 RayPipeline::RayPipeline(const std::vector<RayPipelineShaderData>& InputData, HitGroupMgr::HITGROUP_ID UseHitGroup, int SRVCount, int CBVCount, int UAVCount, int PayloadSize, int AttribSize, int ReflectionCount)
@@ -270,7 +272,7 @@ void RayPipeline::MapHitGroupInfo()
 
 }
 
-void RayPipeline::TraceRay(std::weak_ptr<RaytracingOutput> Output, std::weak_ptr<RaytracingOutput> GBuffer0, std::weak_ptr<RaytracingOutput> GBuffer1)
+void RayPipeline::TraceRay(std::weak_ptr<RaytracingOutput> Output, std::weak_ptr<RaytracingOutput> GBuffer0, std::weak_ptr<RaytracingOutput> GBuffer1, std::weak_ptr<RaytracingOutput> RenderUAV)
 {
 
 	/*===== レイトレーシングを実行 =====*/
@@ -287,12 +289,46 @@ void RayPipeline::TraceRay(std::weak_ptr<RaytracingOutput> Output, std::weak_ptr
 	Output.lock()->SetComputeRootDescriptorTalbe(1);
 	GBuffer0.lock()->SetComputeRootDescriptorTalbe(2);
 	GBuffer1.lock()->SetComputeRootDescriptorTalbe(3);
+	RenderUAV.lock()->SetComputeRootDescriptorTalbe(4);
 
 	// パイプラインを設定。
 	DirectX12CmdList::Instance()->cmdList->SetPipelineState1(stateObject_.Get());
 
 	// レイトレーシングを実行。
 	DirectX12CmdList::Instance()->cmdList->DispatchRays(&dispatchRayDesc_);
+
+
+
+
+	/*===== コピーコマンドを積む =====*/
+
+
+	auto backBufferIndex = DirectX12::Instance()->swapchain->GetCurrentBackBufferIndex();
+	D3D12_RESOURCE_BARRIER barriers[] = {
+		CD3DX12_RESOURCE_BARRIER::Transition(
+		DirectX12::Instance()->backBuffers[backBufferIndex].Get(),
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		D3D12_RESOURCE_STATE_COPY_DEST),
+	};
+	DirectX12CmdList::Instance()->cmdList->ResourceBarrier(_countof(barriers), barriers);
+
+	Output.lock()->SetResourceBarrier(D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_COPY_SOURCE);
+
+	DirectX12CmdList::Instance()->cmdList->CopyResource(DirectX12::Instance()->backBuffers[backBufferIndex].Get(), Output.lock()->GetRaytracingOutput().Get());
+
+	Output.lock()->SetResourceBarrier(D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+
+	// レンダーターゲットのリソースバリアをもとに戻す。
+	D3D12_RESOURCE_BARRIER endBarriers[] = {
+
+	CD3DX12_RESOURCE_BARRIER::Transition(
+	DirectX12::Instance()->backBuffers[backBufferIndex].Get(),
+	D3D12_RESOURCE_STATE_COPY_DEST,
+	D3D12_RESOURCE_STATE_RENDER_TARGET)
+
+	};
+
+	DirectX12CmdList::Instance()->cmdList->ResourceBarrier(_countof(endBarriers), endBarriers);
 
 }
 

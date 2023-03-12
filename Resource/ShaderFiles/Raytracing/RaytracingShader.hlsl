@@ -14,6 +14,7 @@ SamplerState smp : register(s0, space1);
 RWTexture2D<float4> output : register(u0);
 RWTexture2D<float4> gBuffer0 : register(u1);
 RWTexture2D<float4> gBuffer1 : register(u2);
+RWTexture2D<float4> renderUAV : register(u3);
 
 // RayGenerationシェーダー
 [shader("raygeneration")]
@@ -25,7 +26,7 @@ void mainRayGen()
 
     // レイの設定
     RayDesc rayDesc;
-    rayDesc.Origin = gBuffer0[launchIndex].xyz;
+    rayDesc.Origin = gBuffer0[launchIndex].xyz + gBuffer1[launchIndex].xyz * 1.0f;
 
     rayDesc.Direction = gBuffer1[launchIndex].xyz;
     rayDesc.TMin = 0;
@@ -34,7 +35,7 @@ void mainRayGen()
     // ペイロードの設定
     Payload payloadData;
     payloadData.impactAmount_ = 1.0f;
-    payloadData.color_ = float3(0, 0, 0);
+    payloadData.color_ = renderUAV[launchIndex].xyz;
 
     // TransRayに必要な設定を作成
     uint rayMask = 0xFF;
@@ -52,9 +53,21 @@ void mainRayGen()
     0, // miss index
     rayDesc,
     payloadData);
+    
+    float3 color = payloadData.color_;
+    
+    if (color.y == 1)
+    {
+        color = renderUAV[launchIndex.xy].xyz;
+    }
+    else
+    {
+        color = payloadData.color_ / 2.0f;
+
+    }
 
     // 結果格納
-    output[launchIndex.xy] = float4(payloadData.color_, 1);
+    output[launchIndex.xy] = float4(color, 1);
 
 }
 

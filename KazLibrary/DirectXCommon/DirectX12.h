@@ -1,12 +1,13 @@
 #pragma once
 #include"../DirectXCommon/Base.h"
 #include"../Helper/OutPutDebugStringAndCheckResult.h"
+#include"../Helper/ISinglton.h"
 #include<vector>
 
 /// <summary>
 /// DirectX‚Ì‰Šú‰»‚ğs‚¢‚Ü‚·
 /// </summary>
-class DirectX12
+class DirectX12 :public ISingleton<DirectX12>
 {
 public:
 	DirectX12();
@@ -31,7 +32,7 @@ public:
 	Microsoft::WRL::ComPtr<ID3D12CommandQueue> cmdQueue;
 	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapchain;
 
-private:
+public:
 
 	int winX, winY;
 

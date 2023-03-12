@@ -102,7 +102,7 @@ public:
 	/// <summary>
 	/// レイトレ実行。
 	/// </summary>
-	void TraceRay(std::weak_ptr<RaytracingOutput> Output, std::weak_ptr<RaytracingOutput> GBuffer0, std::weak_ptr<RaytracingOutput> GBuffer1);
+	void TraceRay(std::weak_ptr<RaytracingOutput> Output, std::weak_ptr<RaytracingOutput> GBuffer0, std::weak_ptr<RaytracingOutput> GBuffer1, std::weak_ptr<RaytracingOutput> RenderUAV);
 
 	// 各種ゲッタ
 	Microsoft::WRL::ComPtr<ID3D12StateObject> GetStateObject() { return stateObject_; }

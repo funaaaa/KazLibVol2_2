@@ -46,8 +46,7 @@ uint8_t* Blas::WriteShaderRecord(uint8_t* Dst, UINT RecordSize, Microsoft::WRL::
 	Dst += WriteGPUDescriptor(Dst, &DescriptorHeapMgr::Instance()->GetGpuDescriptorView(FbxModelResourceMgr::Instance()->GetResourceData(refModelData_->handle.handle)->indexDescriptor));
 	Dst += WriteGPUDescriptor(Dst, &DescriptorHeapMgr::Instance()->GetGpuDescriptorView(FbxModelResourceMgr::Instance()->GetResourceData(refModelData_->handle.handle)->vertexDescriptor));
 	// テクスチャを書き込む。
-	//Dst += WriteGPUDescriptor(Dst, &DescriptorHeapMgr::Instance()->GetGpuDescriptorView(TextureResourceMgr::Instance()->GetDivData(refModelData_->handle.handle).handle));
-	Dst += static_cast<UINT>(sizeof(D3D12_GPU_DESCRIPTOR_HANDLE*));
+	Dst += WriteGPUDescriptor(Dst, &DescriptorHeapMgr::Instance()->GetGpuDescriptorView(FbxModelResourceMgr::Instance()->GetResourceData(refModelData_->handle.handle)->textureHandle.front()));
 	
 	Dst = entryBegin + RecordSize;
 	return Dst;

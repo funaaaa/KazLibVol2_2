@@ -189,7 +189,7 @@ void FbxModelRender::Draw(bool DRAE_FLAG)
 			BlasReferenceVector::Instance()->AddRef(blas);
 
 			// レイトレ空間にオブジェクトを追加。
-			InstanceVector::Instance()->AddInstance(blas, DirectX::XMMatrixIdentity());
+			InstanceVector::Instance()->AddInstance(blas, baseMatWorldData.matWorld);
 
 		}
 
@@ -198,6 +198,12 @@ void FbxModelRender::Draw(bool DRAE_FLAG)
 			// UAVを登録する。
 			renderData.cmdListInstance->cmdList->SetGraphicsRootDescriptorTable(4, DescriptorHeapMgr::Instance()->GetGpuDescriptorView(refGBuffer0.lock()->GetUAVIndex()));
 			renderData.cmdListInstance->cmdList->SetGraphicsRootDescriptorTable(5, DescriptorHeapMgr::Instance()->GetGpuDescriptorView(refGBuffer1.lock()->GetUAVIndex()));
+			renderData.cmdListInstance->cmdList->SetGraphicsRootDescriptorTable(6, DescriptorHeapMgr::Instance()->GetGpuDescriptorView(refRenderUAV.lock()->GetUAVIndex()));
+
+		}
+		else if (data.pipelineName == PIPELINE_NAME_FBX_RENDERTARGET_TWO_RENDERUAV) {
+
+			renderData.cmdListInstance->cmdList->SetGraphicsRootDescriptorTable(3, DescriptorHeapMgr::Instance()->GetGpuDescriptorView(refRenderUAV.lock()->GetUAVIndex()));
 
 		}
 
@@ -235,7 +241,7 @@ void FbxModelRender::ReleaseSkining()
 
 #include "../Raytracing/Blas.h"
 #include "../Raytracing/BlasReferenceVector.h"
-void FbxModelRender::SetupRaytracing(std::weak_ptr<RaytracingOutput> GBuffer0, std::weak_ptr<RaytracingOutput> GBuffer1, bool IsOpaque)
+void FbxModelRender::SetupRaytracing(std::weak_ptr<RaytracingOutput> GBuffer0, std::weak_ptr<RaytracingOutput> GBuffer1, std::weak_ptr<RaytracingOutput> RenderUAV, bool IsOpaque)
 {
 
 	/*-- レイトレーシングの準備関数 --*/
@@ -255,6 +261,7 @@ void FbxModelRender::SetupRaytracing(std::weak_ptr<RaytracingOutput> GBuffer0, s
 	// GBufferの参照を保存する。
 	refGBuffer0 = GBuffer0;
 	refGBuffer1 = GBuffer1;
+	refRenderUAV = RenderUAV;
 
 }
 

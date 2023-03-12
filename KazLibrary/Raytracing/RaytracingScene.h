@@ -23,6 +23,7 @@ private:
 	// GBuffer
 	std::shared_ptr<RaytracingOutput> gBuffer0_;
 	std::shared_ptr<RaytracingOutput> gBuffer1_;
+	std::shared_ptr<RaytracingOutput> renderUAV_;
 
 	// o—Í—p
 	std::shared_ptr<RaytracingOutput> output_;
@@ -32,7 +33,7 @@ private:
 
 	// “V‹…
 	FbxModelRender skydome_;
-	FbxModelRender cube_;
+	FbxModelRender sphere_;
 
 
 public:
