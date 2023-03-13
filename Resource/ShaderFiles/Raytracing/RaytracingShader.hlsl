@@ -56,7 +56,7 @@ void mainRayGen()
     
     float3 color = payloadData.color_;
     
-    if (color.y == 1)
+    if (color.x == 0 && color.y == 1 && color.z == 0)
     {
         color = renderUAV[launchIndex.xy].xyz;
     }
