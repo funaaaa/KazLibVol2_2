@@ -55,7 +55,7 @@ RaytracingScene::RaytracingScene()
 	//}
 
 	skydome_.data.handle = FbxModelResourceMgr::Instance()->LoadModel(KazFilePathName::RaytracingPath + "skydome.fbx");
-	skydome_.data.transform.scale = { 50.0f,50.0f,50.0f };
+	skydome_.data.transform.scale = { 70.0f,70.0f,70.0f };
 	skydome_.data.transform.rotation = { 90.0f,90.0f,0.0f };
 	skydome_.data.colorData.color.a = 0;
 	skydome_.SetupRaytracing(gBuffer0_, gBuffer1_, renderUAV_);
@@ -94,7 +94,7 @@ void RaytracingScene::Update()
 	sphere_.data.transform.rotation = { 90.0f,rotate,0.0f };
 
 	static float rskydomeRotate = 0.0f;
-	//rskydomeRotate -= 0.3f;
+	rskydomeRotate -= 0.3f;
 	skydome_.data.transform.rotation = { 90.0f,rskydomeRotate,0.0f };
 
 

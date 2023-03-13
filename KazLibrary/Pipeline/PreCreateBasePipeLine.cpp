@@ -538,6 +538,38 @@ PreCreateBasePipeLine::PreCreateBasePipeLine()
 		GraphicsPipeLineMgr::Instance()->RegisterPipeLineDataWithData(gPipeline, PIPELINE_DATA_BACKCARING_ALPHABLEND_RNEDERTARGET_SECOND);
 	}
 
+	// レイトレ用で作成。
+	{
+		//パイプラインの設定
+		D3D12_GRAPHICS_PIPELINE_STATE_DESC gPipeline{};
+		//サンプルマスク
+		gPipeline.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
+		//ラスタライザ
+		//背面カリング、塗りつぶし、深度クリッピング有効
+		CD3DX12_RASTERIZER_DESC rasterrize(D3D12_DEFAULT);
+		gPipeline.RasterizerState = rasterrize;
+		//ブレンドモード
+		gPipeline.BlendState.RenderTarget[0] = alphaBlendDesc;
+		gPipeline.BlendState.RenderTarget[1] = alphaBlendDesc;
+		//gPipeline.BlendState.IndependentBlendEnable = true;
+
+		//図形の形状
+		gPipeline.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+
+		//その他設定
+		gPipeline.NumRenderTargets = 2;
+		gPipeline.RTVFormats[0] = DXGI_FORMAT_R16G16B16A16_FLOAT;
+		gPipeline.RTVFormats[1] = DXGI_FORMAT_R16G16B16A16_FLOAT;
+		gPipeline.SampleDesc.Count = 1;
+
+		//デプスステンシルステートの設定
+		gPipeline.DepthStencilState.DepthEnable = true;							//深度テストを行う
+		gPipeline.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;//書き込み許可
+		gPipeline.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS;		//小さければOK
+		gPipeline.DSVFormat = DXGI_FORMAT_D32_FLOAT;							//深度値フォーマット
+		GraphicsPipeLineMgr::Instance()->RegisterPipeLineDataWithData(gPipeline, PIPELINE_DATA_BACKCARING_ALPHABLEND_RNEDERTARGET_SECOND_RAYTRACING);
+	}
+
 
 	{
 		//パイプラインの設定
@@ -1197,7 +1229,7 @@ PreCreateBasePipeLine::PreCreateBasePipeLine()
 
 		//その他設定
 		gPipeline.NumRenderTargets = 1;
-		gPipeline.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+		gPipeline.RTVFormats[0] = DXGI_FORMAT_R16G16B16A16_FLOAT;
 		gPipeline.SampleDesc.Count = 1;
 
 
@@ -2498,7 +2530,7 @@ PreCreateBasePipeLine::PreCreateBasePipeLine()
 		LAYOUT_POS_NORMAL_TEX_BONE_WEIGHT,
 		SHADER_VERTEX_FBX,
 		SHADER_PIXEL_FBX_RENDER_TWO_LIGHT_RAYTRACING,
-		PIPELINE_DATA_BACKCARING_ALPHABLEND_RNEDERTARGET_SECOND,
+		PIPELINE_DATA_BACKCARING_ALPHABLEND_RNEDERTARGET_SECOND_RAYTRACING,
 		ROOTSIGNATURE_DATA_DRAW_TEX_SKINING_DATA3_UAV_UAV_UAV,
 		PIPELINE_NAME_FBX_RENDERTARGET_TWO_RAYTRACING
 	);
