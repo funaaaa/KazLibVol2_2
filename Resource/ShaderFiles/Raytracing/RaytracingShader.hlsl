@@ -26,7 +26,7 @@ void mainRayGen()
 
     // レイの設定
     RayDesc rayDesc;
-    rayDesc.Origin = gBuffer0[launchIndex].xyz + gBuffer1[launchIndex].xyz * 1.0f;
+    rayDesc.Origin = gBuffer0[launchIndex].xyz + gBuffer1[launchIndex].xyz * 3.0f;
 
     rayDesc.Direction = gBuffer1[launchIndex].xyz;
     rayDesc.TMin = 0;
@@ -62,7 +62,7 @@ void mainRayGen()
     }
     else
     {
-        color = payloadData.color_ / 2.0f;
+        color = payloadData.color_;
 
     }
 

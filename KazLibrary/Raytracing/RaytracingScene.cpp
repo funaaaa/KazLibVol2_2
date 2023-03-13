@@ -32,13 +32,13 @@ RaytracingScene::RaytracingScene()
 
 	// GBufferを生成。
 	gBuffer0_ = std::make_shared<RaytracingOutput>();
-	gBuffer0_->Setting(DXGI_FORMAT_R32G32B32A32_FLOAT, L"GBuffer0");
+	gBuffer0_->Setting(DXGI_FORMAT_R32G32B32A32_FLOAT, L"GBuffer0", KazMath::Vec2<int>(1280, 720), D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 	gBuffer1_ = std::make_shared<RaytracingOutput>();
-	gBuffer1_->Setting(DXGI_FORMAT_R32G32B32A32_FLOAT, L"GBuffer1");
+	gBuffer1_->Setting(DXGI_FORMAT_R32G32B32A32_FLOAT, L"GBuffer1", KazMath::Vec2<int>(1280, 720), D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 	renderUAV_ = std::make_shared<RaytracingOutput>();
-	renderUAV_->Setting(DXGI_FORMAT_R32G32B32A32_FLOAT, L"RenderUAV");
+	renderUAV_->Setting(DXGI_FORMAT_R32G32B32A32_FLOAT, L"RenderUAV", KazMath::Vec2<int>(1280, 720), D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 	output_ = std::make_shared<RaytracingOutput>();
-	output_->Setting(DXGI_FORMAT_R8G8B8A8_UNORM, L"RaytracingOutput");
+	output_->Setting(DXGI_FORMAT_R16G16B16A16_FLOAT, L"RaytracingOutput", KazMath::Vec2<int>(1280, 720), D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 
 	// プレイヤーのモデルをロード
 	//fbxRender[0].data.handle = FbxModelResourceMgr::Instance()->LoadModel(KazFilePathName::PlayerPath + "CH_Right_Back_Anim.fbx");
@@ -57,12 +57,13 @@ RaytracingScene::RaytracingScene()
 	skydome_.data.handle = FbxModelResourceMgr::Instance()->LoadModel(KazFilePathName::RaytracingPath + "skydome.fbx");
 	skydome_.data.transform.scale = { 50.0f,50.0f,50.0f };
 	skydome_.data.transform.rotation = { 90.0f,90.0f,0.0f };
+	skydome_.data.colorData.color.a = 0;
 	skydome_.SetupRaytracing(gBuffer0_, gBuffer1_, renderUAV_);
-	skydome_.data.pipelineName = PIPELINE_NAME_FBX_RENDERTARGET_TWO_RENDERUAV;
 
 	sphere_.data.handle = FbxModelResourceMgr::Instance()->LoadModel(KazFilePathName::RaytracingPath + "sphere.fbx");
 	sphere_.data.transform.scale = { 5.0f,5.0f,5.0f };
-	sphere_.data.transform.rotation = { 0.0f,0.0f,0.0f };
+	sphere_.data.transform.rotation = { 90.0f,0.0f,0.0f };
+	sphere_.data.colorData.color.a = 255;
 	sphere_.SetupRaytracing(gBuffer0_, gBuffer1_, renderUAV_);
 
 }
@@ -88,34 +89,13 @@ void RaytracingScene::Update()
 
 	/*===== 更新処理 =====*/
 
-	//// UAVを初期化
-	//CD3DX12_RANGE readRange(0, 0);
-	//UINT8* pTextureDataBegin = nullptr;
-	//gBuffer0_->GetRaytracingOutput()->Map(0, &readRange, reinterpret_cast<void**>(&pTextureDataBegin));
-	//memset(pTextureDataBegin, 0, 1280 * 720 * 16);
-	//gBuffer0_->GetRaytracingOutput()->Unmap(0, nullptr);
-
-	//readRange = CD3DX12_RANGE(0, 0);
-	//pTextureDataBegin = nullptr;
-	//gBuffer1_->GetRaytracingOutput()->Map(0, &readRange, reinterpret_cast<void**>(&pTextureDataBegin));
-	//memset(pTextureDataBegin, 0, 1280 * 720 * 16);
-	//gBuffer1_->GetRaytracingOutput()->Unmap(0, nullptr);
-
-	//readRange = CD3DX12_RANGE(0, 0);
-	//pTextureDataBegin = nullptr;
-	//renderUAV_->GetRaytracingOutput()->Map(0, &readRange, reinterpret_cast<void**>(&pTextureDataBegin));
-	//memset(pTextureDataBegin, 0, 1280 * 720 * 16);
-	//renderUAV_->GetRaytracingOutput()->Unmap(0, nullptr);
-
-	//readRange = CD3DX12_RANGE(0, 0);
-	//pTextureDataBegin = nullptr;
-	//output_->GetRaytracingOutput()->Map(0, &readRange, reinterpret_cast<void**>(&pTextureDataBegin));
-	//memset(pTextureDataBegin, 0, 1280 * 720 * 4);
-	//output_->GetRaytracingOutput()->Unmap(0, nullptr);
-
 	static float rotate = 0.0f;
-	rotate += 1.0f;
-	sphere_.data.transform.rotation = { 0.0f,rotate,0.0f };
+	rotate += 0.5f;
+	sphere_.data.transform.rotation = { 90.0f,rotate,0.0f };
+
+	static float rskydomeRotate = 0.0f;
+	//rskydomeRotate -= 0.3f;
+	skydome_.data.transform.rotation = { 90.0f,rskydomeRotate,0.0f };
 
 
 	// Instanceコンテナの更新処理。主に配列をclearする。
@@ -142,7 +122,7 @@ void RaytracingScene::Draw()
 
 	// 天球を描画
 	skydome_.Draw();
-	
+
 	// レイトレ対象の球を描画
 	sphere_.Draw();
 

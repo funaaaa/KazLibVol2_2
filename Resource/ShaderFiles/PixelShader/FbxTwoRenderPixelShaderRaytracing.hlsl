@@ -27,19 +27,35 @@ TwoRender PSmain(VSOutput input)
     outPut.target0.a = color.a;
     outPut.target1 = float4(0.0f, 0.0f, 0.0f, 1.0f);
     
-    // GBufferへの書き込み
-    GBuffer0[input.svpos.xy].xyz = input.worldPos.xyz;
-    GBuffer0[input.svpos.xy].w = 1;
+    // 仮の実装。本来は専用の識別用定数バッファを用意する。
+    // レイトレをするかしないかでGBufferに書き込む内容を変える。
+    if (color.a == 1)
+    {
+        
+        // GBufferへの書き込み
+        GBuffer0[input.svpos.xy].xyz = input.worldPos.xyz;
+        GBuffer0[input.svpos.xy].w = 1;
     
-    // カメラの位置をビュー行列から取得する。
-    float3 eyePos = float3(view[3].xyz);
+        // カメラの位置をビュー行列から取得する。
+        float3 eyePos = float3(15,0,0);
     
-    // カメラからこのポリゴンまでのベクトル
-    float3 eyeDir = normalize(eyePos - input.worldPos.xyz);
+        // カメラからこのポリゴンまでのベクトル
+        float3 eyeDir = normalize(input.worldPos.xyz - eyePos);
     
-    // 反射させる。
-    GBuffer1[input.svpos.xy].xyz = reflect(eyeDir, input.normal.xyz);
-    GBuffer1[input.svpos.xy].w = 1;
+        // 反射させる。
+        GBuffer1[input.svpos.xy].xyz = reflect(eyeDir, input.normal.xyz);
+        GBuffer1[input.svpos.xy].w = 1;
+        
+    }
+    else
+    {
+        
+        // GBufferへの書き込み
+        GBuffer0[input.svpos.xy] = float4(0, 0, 0, 0);
+        GBuffer1[input.svpos.xy] = float4(0, 0, 0, 0);
+
+    }
+    
     
     RenderUAV[input.svpos.xy] = outPut.target0;
     

@@ -302,6 +302,15 @@ void RayPipeline::TraceRay(std::weak_ptr<RaytracingOutput> Output, std::weak_ptr
 
 	/*===== コピーコマンドを積む =====*/
 
+	D3D12_RESOURCE_BARRIER barrierToUAV[] = { CD3DX12_RESOURCE_BARRIER::UAV(
+	Output.lock()->GetRaytracingOutput().Get()),CD3DX12_RESOURCE_BARRIER::UAV(
+	GBuffer0.lock()->GetRaytracingOutput().Get()),CD3DX12_RESOURCE_BARRIER::UAV(
+	GBuffer1.lock()->GetRaytracingOutput().Get()),CD3DX12_RESOURCE_BARRIER::UAV(
+	RenderUAV.lock()->GetRaytracingOutput().Get())
+	};
+
+	DirectX12CmdList::Instance()->cmdList->ResourceBarrier(3, barrierToUAV);
+
 
 	auto backBufferIndex = DirectX12::Instance()->swapchain->GetCurrentBackBufferIndex();
 	D3D12_RESOURCE_BARRIER barriers[] = {
